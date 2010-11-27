@@ -1,0 +1,63 @@
+<?php
+$this->headMeta()->appendHttpEquiv('Content-Type', 'text/html;charset=utf-8');
+$this->headTitle()->setSeparator(' - ');
+$this->headTitle('Admin area');
+echo $this->doctype(); ?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <?php echo $this->headMeta(); ?>
+        <?php echo $this->headTitle(); ?>
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/crud.css" />
+        <?php
+        /*echo Crud_Forms_Helpers_AutoComplete::css(
+        array(
+        'crud.css',
+        'autocomplete.css',
+        'jquery-ui.css',
+        'datepicker.css',
+        'jquery-ui-1.8.4.custom.css',
+        )
+        );
+        echo Crud_Forms_Helpers_AutoComplete::js(
+        array(
+        'jquery-1.4.2.min.js',
+        'jquery-ui.min.js',
+        'autocomplete.js',
+        'autocomplete_element_admin.js',
+        'datepicker.js' //contains date.js
+        )
+        ); */?>
+
+    <!--[if lte IE 7]>
+      <style type="text/css">
+      .autocomplete-w1 { left:0px; top:8px; }
+      pre { padding-bottom:25px; overflow-y:hidden; }
+      </style>
+      <![endif]-->
+
+</head><body>
+<h1>Admin Area</h1>
+Made with Zend Framework CRUD libraries (alpha version release 09.2010) by E.C. (<a href="http://www.phpntips.com">www.phpntips.com</a>)<br/>
+No limitation for users, records are automatically reset every 15 minutes.
+<?php
+$links = array(
+    'Products' => 'products', 
+    'Bugs' => 'bugs',  
+    //'BugsProducts' => 'bugs-products',
+    'Accounts' => 'accounts', 
+); ?>
+<ul class="nav">
+    <li><a href="<?php echo $this->url(array('controller'=>'index', 'module'=>'admin'),'default', true) ?>">Home</a></li>
+<?php
+foreach($links as $name => $ctrl) {
+    $link = $this->url(array('controller'=>$ctrl, 'module'=>'admin'),'default', true);
+    ?><li><a href="<?php echo $link ?>"><?php echo $name ?></a></li><?php
+}
+?>
+</ul>
+<div class="clear"></div>
+<hr class="sep">
+<?php echo $this->layout()->content; ?>
+</body>
+</html>

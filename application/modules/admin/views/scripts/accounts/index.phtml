@@ -1,0 +1,25 @@
+<?php if ($this->messages): ?>
+ <div class="flashMessages"><ul>
+   <li><?php echo implode('</li><li>', $this->messages) ?></li>
+ </ul></div>
+<?php endif; ?>
+<?php echo $this->orderForm ?>
+<?php #echo $this->filterForm ?>
+<?php echo $this->paginationControl($this->paginator, 'Sliding', '_table_navigation.phtml');
+
+echo Crud_View_Helpers_Paginator::paginatorToTable(
+    $this->data,
+    $this,
+    array(
+        'account_name'=>'Account Name',
+        'fullname'=>'Name',
+    ),
+    array(), //options
+    $this->model
+);
+echo $this->paginationControl($this->paginator, 'Sliding', '_table_navigation.phtml');
+?>
+<a href="<?php echo $this->url(array('action'=>'add'));?>" class="addlink"><?php echo $this->translate('Add a new record') ?></a>
+<hr class="sep">
+Accounts.<br>
+ACcounts added here are automatically read by the dropdown boxes in the bugs page.

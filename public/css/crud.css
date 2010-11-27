@@ -1,0 +1,76 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+body{
+    margin: 10px;
+}
+
+.clear {
+    clear:both;
+}
+
+hr.sep {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/*menu*/
+
+ul.nav {
+    height: 20px;
+    list-style-type: none;
+}
+
+ul.nav li{
+    float:left;
+    height: 20px;
+    width: 100px;
+    text-align: center;
+    margin: 3px;
+}
+
+ul.nav li a {
+    color:red;
+    font-weight: bold;
+}
+
+/* paginator */
+
+
+table#paginatorTable tr td {
+    border-right: gray 1px solid;
+    padding: 5px;
+}
+
+table#paginatorTable tr th {
+    background-color: #445159;
+    color: #FFFFFF;
+    padding: 5px;
+}
+
+table#paginatorTable tr td.last {
+    border-right: none;
+}
+
+table#paginatorTable tr.odd {
+    background-color: #D1DADF;
+}
+
+
+/* filter form */
+form.form_filter {
+
+    float:right;
+    width: 200px;
+}
+
+form.form_filter fieldset {
+    text-align: center;
+    padding: 5px;
+}
+
+form.form_filter dd {
+    
+}

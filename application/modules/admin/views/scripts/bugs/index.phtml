@@ -1,0 +1,31 @@
+<?php if ($this->messages): ?>
+ <div class="flashMessages"><ul>
+   <li><?php echo implode('</li><li>', $this->messages) ?></li>
+ </ul></div>
+<?php endif; ?>
+<?php echo $this->orderForm ?>
+<?php echo $this->filterForm ?>
+<?php echo $this->paginationControl($this->paginator, 'Sliding', '_table_navigation.phtml');
+
+echo Crud_View_Helpers_Paginator::paginatorToTable(
+    $this->data,
+    $this,
+    array(
+        'bug_id'=>'Bug ID',
+        'bug_description'=>'Description',
+        'bug_status'=>'Status',
+        'reported_by_fullname'=>'Reported by',
+        'assigned_to_fullname'=>'Assigned To',
+        'verified_by_fullname'=>'Verified By',
+    ),
+    array(), //options
+    $this->model
+);
+echo $this->paginationControl($this->paginator, 'Sliding', '_table_navigation.phtml');
+?>
+<a href="<?php echo $this->url(array('action'=>'add'));?>" class="addlink"><?php echo $this->translate('Add a new Bug') ?></a>
+<hr class="sep">
+Filters on the right.<br>
+Filters are preserved with the page number, order in URL parameters<br/>
+JQuery is used to auto tick the checkbox when selecting a filter<br/>
+Edit action: dropdown are used by asking the parent tables

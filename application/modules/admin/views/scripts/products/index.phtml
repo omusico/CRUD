@@ -1,0 +1,32 @@
+<?php if ($this->messages): ?>
+ <div class="flashMessages"><ul>
+   <li><?php echo implode('</li><li>', $this->messages) ?></li>
+ </ul></div>
+<?php endif; ?>
+<?php echo $this->orderForm ?>
+<?php #echo $this->filterForm ?>
+<?php echo $this->paginationControl($this->paginator, 'Sliding', '_table_navigation.phtml');
+
+echo Crud_View_Helpers_Paginator::paginatorToTable(
+    $this->data,
+    $this,
+    array(
+        //'product_id'=>'ID product',
+        '_product_name'=>'Name',
+        '_bugs'=>'Bugs',
+    ),
+    array(), //options
+    $this->model
+);
+echo $this->paginationControl($this->paginator, 'Sliding', '_table_navigation.phtml');
+?>
+<a href="<?php echo $this->url(array('action'=>'add'));?>" class="addlink"><?php echo $this->translate('Add a new Product') ?></a>
+<hr class="sep">
+Simple listing of products.<br>
+Records per page set to 3 to show the paginator.<br/>
+Select the order in the form above.<br/>
+Click on [edit] and [delete] to manage records.<br/>
+Ordering filters, page numbers are preserved when return from an edit/delete action<br/>
+Click on [manage] to show an iframe (BugsProductsController, "iframe" layout) to mange
+<b>Many-to-Many relationship Bugs-Products</b>:
+it shows the bugs associated to the product <br/>

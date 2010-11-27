@@ -1,0 +1,1 @@
+# script to truncate tables and reimport data from data.sql

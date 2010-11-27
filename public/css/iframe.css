@@ -1,0 +1,17 @@
+table#paginatorTable tr td {
+    border-right: gray 1px solid;
+    padding: 5px;
+}
+
+table#paginatorTable tr th {
+    background-color: #CECECE;
+    padding: 5px;
+}
+
+table#paginatorTable tr td.last {
+    border-right: none;
+}
+
+table#paginatorTable tr.odd {
+    background-color: #DEDEDE;
+}
