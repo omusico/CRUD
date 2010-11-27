@@ -1,5 +1,4 @@
 <?php
-
 // Define path to application directory
 defined('APPLICATION_PATH')
     || define('APPLICATION_PATH', realpath(dirname(__FILE__) . '/../application'));
@@ -7,7 +6,6 @@ defined('APPLICATION_PATH')
 // Define application environment
 defined('APPLICATION_ENV')
     || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production'));
-
 // Load db password of prod env from external file.
 // This is a public SVN, I don't trust you :)
 define('DB_PASS', APPLICATION_ENV==='production' ?
@@ -20,6 +18,7 @@ set_include_path(implode(PATH_SEPARATOR, array(
     realpath(APPLICATION_PATH . '/../library'),
     'D:/wamp/www/ZendFramework-1.10.7-minimal/library',
     '/home/elvisciotti/library/ZendFramework-1.10.8-minimal/library',
+    '/var/www/ZendFramework-1.11.0/library',
     get_include_path(),
 )));
 
