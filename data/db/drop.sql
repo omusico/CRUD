@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS `accounts`;
+DROP TABLE IF EXISTS `bugs`;
+DROP TABLE IF EXISTS `bugs_products`;
+DROP TABLE IF EXISTS `products`;
