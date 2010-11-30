@@ -291,7 +291,8 @@ abstract class Crud_Controller_Abstract extends Zend_Controller_Action
         return $post;
     }
 
-    protected function _processFixedValues($post){
+    protected function _processFixedValues($post)
+    {
         $fixedVals = $this->CrudForm()->getFixedValues();
         $metadataKeys = array_keys($this->CrudModel()->getMetadata());
         #pd($metadataKeys);
@@ -338,7 +339,9 @@ abstract class Crud_Controller_Abstract extends Zend_Controller_Action
      * @param Crud_Model_Interface $model
      * @param array $postData
      */
-    public static function getNeededValuesForPK(Crud_Model_Interface $model, array $postData)
+    public static function getNeededValuesForPK(
+            Crud_Model_Interface $model, array $postData
+    )
     {
         $pk = $model->getPKName();
         if (is_array($pk)) {
@@ -431,7 +434,8 @@ abstract class Crud_Controller_Abstract extends Zend_Controller_Action
 
     }
 
-    /** manage exceptions by setting $this->view->errors adn flashMessenger with errors
+    /** manage exceptions by setting $this->view->errors
+     * and flashMessenger with errors
      *
      * @param Zend_Excetpion $e
      * @param array $options prefix,textError,textErrorDuplicate
@@ -464,9 +468,7 @@ abstract class Crud_Controller_Abstract extends Zend_Controller_Action
     {
 
     }
-    public function importbussinessAction(){
-        die("in");
-    }
+
     public function deleteAction()
     {
         if ($this->getRequest()->isPost()) {
@@ -538,7 +540,8 @@ abstract class Crud_Controller_Abstract extends Zend_Controller_Action
 
     }
 
-    protected function _redirectToControllerIndex(){
+    protected function _redirectToControllerIndex()
+    {
         $this->getHelper('redirector')->gotoUrl( $this->view->url(array(
              'action'   => 'index',
              'page'     => $this->getRequest()->getParam('page',null),
@@ -547,75 +550,6 @@ abstract class Crud_Controller_Abstract extends Zend_Controller_Action
         );
     }
     
-    
-    /**
-     * Add message details to a given queue 
-     *
-     */
-    protected function _addToQueue($queueName, $itemData) 
-    {
-        $queuesMap = $this->getInvokeArg('bootstrap')->getResource('queues');
-
-        if (array_key_exists($queueName, $queuesMap)) {
-            if (!is_null($queuesMap[$queueName])) {
-                $queue = $queuesMap[$queueName];
-                
-                try {
-                    $queue->send(serialize($itemData));
-                    return TRUE;
-                } catch(Zend_Queue_Exception $e) {
-                    return FALSE;
-                }
-            }    
-        }
-        
-        return FALSE;
-        
-    }
-    
-        
-    /**
-     * Manages the record if there's spam in it and adds it to the spam queue. 
-     *
-     * @param array $servicesMap
-     */
-    protected function _filterSpamInput($servicesMap) 
-    {
-        if (array_key_exists('akismet', $servicesMap)) {
-
-            $akismet = $servicesMap['akismet'];
-            
-            $isSpam = $akismet->isSpam(
-                $akismet->getFilterData($inputData)
-                );
-            
-            $itemData = array(
-                'type' => 'comment',
-                'data' => $inputData,                
-                );
-
-            // if it's spam, add to the spam queue
-            if ($isSpam) {                
-                $this->_addToQueue('spam', $itemData);
-            }            
-        } 
-    }
-    
-    /**
-     * Manages the record if there's profanity in it and adds it to the profanity queue. 
-     *
-     * @param array $servicesMap
-     */    
-    protected function _filterProfanityInput($servicesMap) 
-    {
-        /*if (array_key_exists('webpurify', $servicesMap)) {
-            $webPurify = new Zend_Rest_Client('http://www.webpurify.com/services/rest/');
-            $webPurify->method('webpurify.live.check');
-            $webPurify->api_key('');
-            $webPurify->text($data);
-            $result = $webPurify->get();        
-        }*/
-    }
 
     protected function _noLayout()
     {
