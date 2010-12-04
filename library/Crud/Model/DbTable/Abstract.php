@@ -30,7 +30,8 @@ abstract class Crud_Model_DbTable_Abstract
         return $this->_metadata;
     }
 
-    public function getRecordHumanReadableName($pk) {
+    public function getRecordHumanReadableName($pk)
+    {
         return 'with "Id" equal to ' . $pk;
     }
 
@@ -53,7 +54,8 @@ abstract class Crud_Model_DbTable_Abstract
         return $this->select();
     }
 
-    /** Return the primary key, or the string (if the primary key is not compound)
+    /** Return the primary key, or the string
+     *  (if the primary key is not compound)
      *
      * @return array|string primary key of the model
      */
@@ -70,18 +72,21 @@ abstract class Crud_Model_DbTable_Abstract
    /** Return record by PK
     *
     * @param string|array $idOrWhere where or array to select.
-    *                                If a single value, "<primary key> = ?" is prefixed
+    *        If a single value, "<primary key> = ?" is prefixed
     * @return array result record
     */
-    public function getByPK($idOrWhere /*, $pk=null deprecated*/, $exceptions = true)
+    public function getByPK($idOrWhere, $exceptions = true)
     {
-        //if the argument doesn't contain "?" (not a "where") then make the "where"
+        // if the argument doesn't contain "?" (not a "where")
+        // then make the "where"
         $pkName = $this->getPKName();
 
         $row = $this->fetchRow($this->_convertWhere($idOrWhere));
         if (!$row) {
             if ($exceptions) {
-                throw new Zend_Db_Exception('Could not find row with PK ' . print_r($idOrWhere,1));
+                throw new Zend_Db_Exception(
+                    'Could not find row with PK ' . print_r($idOrWhere, 1)
+                );
             } else {
                 return array();
             }
@@ -147,16 +152,22 @@ abstract class Crud_Model_DbTable_Abstract
         $ret = $where;
         if (is_array($where)) { //compound key
             foreach ($where as $k=>$v) {
-                $where2[$k.' = ?'] =  $where[$k];
+                $whereTwo[$k.' = ?'] =  $where[$k];
             }
-            $ret = $where2;
+            $ret = $whereTwo;
         } else {
             $pkName = $this->getPKName();
             if (is_array($pkName)) {
-                throw new Zend_Exception('update of record with compound key with no multiple values');
+                throw new Zend_Exception(
+                    'update of record with compound key with no multiple values'
+                );
             } else {
                 //single argument with condition
-                if (strpos($where, '=')!==false || strpos($where, '<')!==false || strpos($where, '>')!==false) {
+                if (
+                    strpos($where, '=')!==false
+                    || strpos($where, '<')!==false
+                    || strpos($where, '>')!==false
+                ) {
                     //$ret = $where;
                 } else { //only values -> prefix PK
                     $ret = $pkName . "='". $where."'"; //TODO quote
@@ -184,11 +195,14 @@ abstract class Crud_Model_DbTable_Abstract
     
     public function search($q, $limit)
     {
-        return array('id'=>'qazwsxedcrfvtgbyhnujmikolp', '_name'=>'model::search to implement');
+        return array(
+            'id'=>'qazwsxedcrfvtgbyhnujmikolp',
+            '_name'=>'model::search to implement'
+        );
         /* $select = $this->select();
          $select->from(
             $this->_name,
-            array('id', '_name'=>new Zend_Db_Expr("CONCAT(firstname,' ',lastname,' [',email,']')")))
+            array('id', '_name'=>new Zend_Db_Expr("CONCAT(firstn ',lastn)")))
          ->orWhere(" email LIKE '%$q%'")
          ->orWhere(" firstname LIKE '%$q%'")
          ->orWhere(" lastname LIKE '%$q%'")
@@ -198,5 +212,24 @@ abstract class Crud_Model_DbTable_Abstract
          */
 
     }
+
+    protected function _getSelectForDropDown()
+    {
+        return $this->select();
+    }
+
+
+    public function getForDropDown($option=null, $value=null)
+    {
+        $ret = array(0=>'-- select one --');
+        $records = $this->fetchAll($this->_getSelectForDropDown())->toArray();
+        foreach ($records as $record) {
+            $finalOption = $option ? $option : array_shift($record);
+            $finalValue  = $value  ? $value  : array_shift($record);
+            $ret[$finalOption] = $finalValue .' (Id = '.$finalOption.')';
+        }
+        return $ret;
+    }
+
     
 }
