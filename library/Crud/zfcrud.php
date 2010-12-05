@@ -21,6 +21,7 @@ require_once 'Zend/Registry.php';
 
 define('APP_MODULE', 'admin'); //TODO change controller template
 
+// declare CL options
 $zcg = new Zend_Console_Getopt(array(
     //'module|m=s'     => 'Module name (e.g.: admin)',
     'table|t=s'    => 'Mysql table name',
@@ -35,6 +36,7 @@ try {
     exit;
 }
 
+//get options and launch CrudCreator class methods
 $args = $zcg->getRemainingArgs();
 
 if (strcasecmp($args[0], 'create')===0) {
@@ -71,7 +73,14 @@ class CrudCreator
     private $_templates;
 
 
-
+    /**
+     * set initial params and read table metadata
+     * 
+     * @param string $name
+     * @param string $module
+     * @param string $table
+     * @param string $db
+     */
     function __construct($name, $module, $table, $db)
     {
         $this->_name    = ucfirst($name);
@@ -87,7 +96,7 @@ class CrudCreator
                 'password' => ''
             )
         );
-        #$db->getConnection();
+        //$db->getConnection();
         $this->_metadata = $db->describeTable($table);
         $this->initTpls();
     }
@@ -123,7 +132,7 @@ class CrudCreator
 
         $keys = array();
         foreach ($this->_metadata as $k=>$v) {
-            $keys[$k] = ucwords(str_replace(array('_','-'), ' ', $k));
+            $keys[$k] = ucwords(str_replace(array('_', '-'), ' ', $k));
         }
 
         $data = str_replace(
@@ -136,7 +145,7 @@ class CrudCreator
 
 
     /**
-     *
+     * launch generateForm, generateOrderForm and generateFilterForm
      */
     function generateForms()
     {
@@ -147,7 +156,7 @@ class CrudCreator
 
 
     /**
-     *
+     * generateForm
      */
     function generateForm()
     {
@@ -163,7 +172,7 @@ class CrudCreator
 
 
     /**
-     *
+     *generateOrderForm
      */
     function generateOrderForm()
     {
@@ -178,7 +187,7 @@ class CrudCreator
 
 
     /**
-     *
+     *generateFilterForm
      */
     function generateFilterForm()
     {
@@ -193,7 +202,7 @@ class CrudCreator
 
 
     /**
-     *
+     *generateDbTable
      */
     function generateDbTable()
     {
@@ -225,7 +234,7 @@ class CrudCreator
      */
     function write($file, $content)
     {
-        #die($file);
+        //die($file);
         if (file_exists($file)) {
             echo "$file already exists!\n";
         } else {

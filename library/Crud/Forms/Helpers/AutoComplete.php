@@ -15,8 +15,8 @@
 class Crud_Forms_Helpers_AutoComplete
 {
 
-    protected static $_loaded_js = array();
-    protected static $_loaded_css = array();
+    protected static $_loadedJs = array();
+    protected static $_loadedCss = array();
 
     /** 
      * @param array|string $src like /path/to/file.css
@@ -28,19 +28,20 @@ class Crud_Forms_Helpers_AutoComplete
        //array
        if (is_array($src)) {
            $ret = '';
-           foreach($src as $curElem) {
+           foreach ($src as $curElem) {
                $ret .= self::css($curElem);
            }
            return $ret;
            
        } else { //string
-           if (strpos($src,'/')!==false) {
+           if (strpos($src, '/')!==false) {
                trigger_error('css should not contain a slash', E_USER_WARNING);
            }
            $ret = '';
-           if (!in_array($src, self::$_loaded_css)) {
-               $ret =  '<link href="' . $basePath . $src . '" rel="stylesheet" type="text/css"/>';
-               self::$_loaded_css[] = $src;
+           if (!in_array($src, self::$_loadedCss)) {
+               $ret =  '<link href="' . $basePath . $src
+                    . '" rel="stylesheet" type="text/css"/>';
+               self::$_loadedCss[] = $src;
            }
            return $ret;
            
@@ -58,31 +59,40 @@ class Crud_Forms_Helpers_AutoComplete
        //array
        if (is_array($src)) {
            $ret = '';
-           foreach($src as $curElem) {
+           foreach ($src as $curElem) {
                $ret .= self::js($curElem);
            }
            return $ret;
 
        } else { //string
-           if (strpos($src,'/') !== false) {
+           if (strpos($src, '/') !== false) {
                trigger_error('css should not contain a slash', E_USER_WARNING);
            }
            $ret = '';
-           if (!in_array($src, self::$_loaded_js)) {
-               $ret =  '<script type="text/javascript" src="' . $basePath . $src . '"></script>';
-               self::$_loaded_js[] = $src;
+           if (!in_array($src, self::$_loadedJs)) {
+               $ret =  '<script type="text/javascript" src="' . $basePath
+                    . $src . '"></script>';
+               self::$_loadedJs[] = $src;
            }
            return $ret;
        }
        
    }
 
-   /** autocomplete_element.js must contain the "autocompleteFormElement" function
+   /**
+    * autocomplete_element.js must contain the "autocompleteFormElement"
+    * function
     */
-   public static function getHTMLBeforeForm($autoCompleteScript/*='/js/autocomplete_element.js'*/)
+   public static function getHTMLBeforeForm($autoCompleteScript)
    {
         return  self::css(array('autocomplete.css', 'jquery-ui.css')).
-                self::js(array('jquery-ui.min.js', 'autocomplete.js', $autoCompleteScript));
+                self::js(
+                    array(
+                        'jquery-ui.min.js',
+                        'autocomplete.js',
+                        $autoCompleteScript
+                    )
+                );
    }
 
    /** 
@@ -97,16 +107,18 @@ class Crud_Forms_Helpers_AutoComplete
     */
    public static function getJsAfterForm(array $options) //getHTMLAfterForm
    {
-        $ret  = sprintf(   	
-             'autocompleteFormElement(%s, %s, ',
-             self::jsString($options['id']),
-             self::jsString($options['url']));
+        $ret = sprintf(
+            'autocompleteFormElement(%s, %s, ',
+            self::jsString($options['id']),
+            self::jsString($options['url'])
+        );
         $ret .= '{';
         $first = true;
-        foreach($options as $k => $v) {
-            if($first) $first = false;
+        foreach ($options as $k => $v) {
+            if ($first) $first = false;
             else $ret .= ', ';
-            $ret .= $k . ' : ' . (substr($v, 0, 8) == 'function' ? $v : self::jsString($v) );
+            $ret .= $k . ' : '
+                 . (substr($v, 0, 8) == 'function' ? $v : self::jsString($v));
         }
         $ret .= '});';
         return $ret;
@@ -121,51 +133,63 @@ class Crud_Forms_Helpers_AutoComplete
        return sprintf("'%s'", str_replace('\'', '\\\'', $src));
    }
 
-   /** for templates. Prints the data in the format readable by autocomplete element
+   /** for templates. Prints the data in the format readable
+    * by autocomplete element
     * @param array $recordsOrString
     * @param string $id
     * @param string $second
-    * @param boolean $displayIdBrackets prints the ID inside brackets after the name
+    * @param boolean $displayIdBrackets prints the ID inside brackets
+    * after the name
     */
-   public static function autoCompleteList($recordsOrString, $id = 'id', $second = 'name', $displayIdBrackets = false)
-   {
+    public static function autoCompleteList(
+        $recordsOrString, $id = 'id', $second = 'name',
+        $displayIdBrackets = false
+    )
+    {
        $ret = '';
        if (is_array($recordsOrString)) {
-       	
+           
            foreach ($recordsOrString as $record) {
-               if(is_array($id)) {
-               		$first = true;
-               		foreach($id as $_id) {
-               			if(isset($record[$_id])) {
-	               			if($first) {
-	               				$first = false;
-	               			} else {
-	               				$ret .= '-';
-	               			}               				
-               				$ret .= self::convertForAutoComplete($record[$_id]);
-               			}
-               			
-               		}
+               if (is_array($id)) {
+                       $first = true;
+                       foreach ($id as $_id) {
+                           if (isset($record[$_id])) {
+                               if ($first) {
+                                   $first = false;
+                               } else {
+                                   $ret .= '-';
+                               }                               
+                               $ret .= self::convertForAutoComplete(
+                                   $record[$_id]
+                               );
+                           }
+                           
+                       }
                } else {
-               		$ret .= self::convertForAutoComplete($record[$id]);
+                       $ret .= self::convertForAutoComplete($record[$id]);
                }
                $ret .='|';
                //var_dump($record);die;
-               if(is_array($second)) {
+               if (is_array($second)) {
                     $first = true;
-               		foreach($second as $_second) {
-               			if(isset($record[$_second])) {
-	               			if($first) {
-	               				$first = false;
-	               			} else {
-	               				$ret .= '  ►  ';
-	               			}               				
-               				$ret .= self::convertForAutoComplete($record[$_second]);
-               			}
-               		}
+                       foreach ($second as $_second) {
+                           if (isset($record[$_second])) {
+                               if ($first) {
+                                   $first = false;
+                               } else {
+                                   $ret .= '  ►  ';
+                               }                               
+                               $ret .= self::convertForAutoComplete(
+                                   $record[$_second]
+                               );
+                           }
+                       }
                } else {
-	               $ret .= self::convertForAutoComplete($record[$second]) .
-	                    ($displayIdBrackets ? ' (Id = '.intval($record[$id]).')' : '');
+                   $ret .= self::convertForAutoComplete($record[$second]) .
+                        ($displayIdBrackets 
+                         ? ' (Id = '.intval($record[$id]).')'
+                         : ''
+                        );
                }
                $ret .= PHP_EOL;
            }
@@ -179,18 +203,20 @@ class Crud_Forms_Helpers_AutoComplete
     public static function convertForAutoComplete($str)
     {
         $str = substr(
-            str_replace(array("\n", '|'), array(" " ," "), $str),
+            str_replace(array("\n", '|'), array(" " , " "), $str),
             0,
             100
         );
         return $str;
     }
 
-    /** for controller, search action. it implements the logic to return the records for the tpl
+    /** for controller, search action. it implements the logic
+     * to return the records for the tpl
      * <code>
      *   <?php $this->layout()->disableLayout();  ?>
-     *   <?php echo Crud_Forms_Helpers_AutoComplete::autoCompleteList($this->records,
-     *  'id','name');
+     *   <?php echo Crud_Forms_Helpers_AutoComplete::
+     *  autoCompleteList($this->records,
+     *  'id', 'name');
      *  </code>
      *
      */
@@ -208,8 +234,8 @@ class Crud_Forms_Helpers_AutoComplete
                 try {
                     $row    = $model->getByPK($q);
                     $return = $model->getNameAutoComplete($row);
-                } catch (Zend_Exception $e){
-                    $return = 'not found' ;#.(APPLICATION_ENV=='production' ? '' : $e->getMessage());
+                } catch (Zend_Exception $e) {
+                    $return = 'not found' ;
                 }
             }
 
@@ -218,7 +244,7 @@ class Crud_Forms_Helpers_AutoComplete
             $q = Crud_Helpers_Utils::cleanQuerySearch($q);
              if (strlen($q)>1) {
                 $return = $model->search($q, $request->getParam('limit', 20));
-            }
+             }
         }
         return $return;
     }

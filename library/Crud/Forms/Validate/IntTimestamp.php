@@ -12,16 +12,17 @@
  */
 class Crud_Forms_Validate_IntTimestamp extends Zend_Validate_Int
 {
-    CONST MIN_YEAR = 1975; #1/1/1990 = mktime(0,0,0,1,1,1990);
+    CONST MIN_YEAR = 1975; //1/1/1990 = mktime(0, 0, 0, 1, 1, 1990);
     protected $_messageTemplates = array(
-        self::INVALID => "Invalid type given, value should be a valid timestamp (year greater than 1975)" ,
-        self::NOT_INT => "'%value%' does not appear to be a timestamp (year greater than 1975)"
+        self::INVALID => "Invalid type given, value not a timestamp" ,
+        self::NOT_INT => "'%value%' does not appear to be a timestamp"
     );
 
     /**
      * Defined by Zend_Validate_Interface
      *
-     * Returns true if and only if $value is a valid integer AND greater than zero
+     * Returns true if and only if $value is a valid integer AND greater
+     * than zero
      *
      * @param  string|integer $value
      * @return boolean

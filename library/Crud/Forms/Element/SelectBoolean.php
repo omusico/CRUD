@@ -12,5 +12,5 @@
  */
 class Crud_Forms_Element_SelectBoolean extends Zend_Form_Element_Select
 {
-   public $options = array(1=>'Yes',0=>'No');
+   public $options = array(1=>'Yes', 0=>'No');
 }

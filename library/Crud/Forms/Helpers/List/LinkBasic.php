@@ -12,12 +12,14 @@
  */
 class Crud_Forms_Helpers_List_LinkBasic extends Zend_View_Helper_Abstract
 {
-    public function linkBasic($link, $displayName, $target = '_blank', $popupOptions = 0)
+    public function linkBasic(
+        $link, $displayName, $target = '_blank', $popupOptions = 0
+    )
     {
-       
-
-
-        $popupHtml = "onclick=\"window.open('".$link."', '', 'scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,width=800,height=500');return false;\"";
+        $popupHtml = "onclick=\"window.open('".$link
+                   . "', '', 'scrollbars=yes, resizable=yes, status=no,"
+                   . " location=no, toolbar=no, width=800, height=500');"
+                   . "return false;\"";
 
         return sprintf(
             '<a %s href="%s" title="%s" target="%s">%s</a>',
@@ -26,6 +28,6 @@ class Crud_Forms_Helpers_List_LinkBasic extends Zend_View_Helper_Abstract
             str_replace('"', ' ', strip_tags($displayName)),
             $target,
             $displayName
-       );
+        );
     }
 }

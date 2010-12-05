@@ -10,7 +10,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-Interface  Crud_Controller_SearchInterface {
-
+Interface  Crud_Controller_SearchInterface
+{
     public function searchAction();
 }

@@ -12,10 +12,14 @@
  */
 class Crud_Forms_Helpers_List_Link extends Zend_View_Helper_Abstract
 {
-    public function link($link, $len=55, $displayName=null, $target = '_blank', $displayErrors = true)
+    public function link(
+        $link, $len=55, $displayName=null, $target = '_blank',
+        $displayErrors = true
+    )
     {
         if ($displayName==null) {
-            $displayName = (strlen($link)>$len) ? substr($link, 0, $len) . '...' : $link;
+            $displayName = (strlen($link)>$len) ?
+                         substr($link, 0, $len) . '...' : $link;
         }
 
         $error = '';
@@ -33,10 +37,10 @@ class Crud_Forms_Helpers_List_Link extends Zend_View_Helper_Abstract
         return sprintf(
             '<a href="%s" title="%s" target="%s">%s</a>%s',
             $link, // link
-            $link,  // title
+            $link, // title
             $target, // _blank
             $displayName, // text
             $error
-       );
+        );
     }
 }

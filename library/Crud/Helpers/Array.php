@@ -12,24 +12,29 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Helpers_Array {
+class Crud_Helpers_Array
+{
 
     /** Convert
      * Array
-     *   ( [0] => Array([id] => 27        [name] => cars)
-     *     [1] => Array([id] => 28        [name] => home ) )
+     *   ([0] => Array([id] => 27        [name] => cars)
+     *     [1] => Array([id] => 28        [name] => home) )
      *
      *  TO
      * Array
-     *   ( [27] => cars => 27        [28] => home) )
+     *   ([27] => cars => 27        [28] => home))
      *  
      *
      * @return <type>
      */
-    public static function fetchAllToAr(array $inputAr, $keyElem = 'id', $valueElem = 'name'){
+    public static function fetchAllToAr(
+        array $inputAr, $keyElem = 'id', $valueElem = 'name'
+    )
+    {
         $ret = array();
         foreach ($inputAr as $row) {
-            $ret[$row[$keyElem]] = $row[$valueElem]; //$ret[$row['id']] = $row['name']; // $ret[27] = 'cars';
+            //$ret[$row['id']] = $row['name']; // $ret[27] = 'cars';
+            $ret[$row[$keyElem]] = $row[$valueElem];
         }
         return $ret;
     }

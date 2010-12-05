@@ -1,6 +1,6 @@
 <?php
 /**
- * must define $_metadata and the ctor !!!
+ * Abstract Oder form
  *//**
  * Class Name
  *
@@ -21,6 +21,13 @@ abstract class Crud_Forms_Order_Abstract extends Zend_Form
     const ORDER_PARAM_NAME      = 'order';
     const ORDER_DIRECTION_NAME  = 'direction';
 
+    /**
+     * Ctor
+     *
+     * @param array $options
+     * @param Crud_Model_Interface $model
+     * @param Zend_Controller_Request_Http $formValues
+     */
     public function __construct(
         $options,
         Crud_Model_Interface $model,
@@ -30,34 +37,53 @@ abstract class Crud_Forms_Order_Abstract extends Zend_Form
         $this->_metadata = $model->getMetadata();
 
         $this->_queryData = array(
-            self::ORDER_PARAM_NAME     => $formValues->getParam(self::ORDER_PARAM_NAME, null),
-            self::ORDER_DIRECTION_NAME => $formValues->getParam(self::ORDER_DIRECTION_NAME, null),
-            'form_order_submitted'     => 1,
-            'submit'                   => 'Order'
+            self::ORDER_PARAM_NAME     => $formValues->getParam(
+                self::ORDER_PARAM_NAME, null
+            ),
+            self::ORDER_DIRECTION_NAME => $formValues->getParam(
+                self::ORDER_DIRECTION_NAME, null
+            ),
+            'form_order_submitted' => 1,
+            'submit'               => 'Order'
         );
 
         parent::__construct($options);
     }
 
+    /**
+     * Convert underscores to spaces
+     *
+     * @param string $name
+     * @return string
+     */
     protected static function humanReadableColumn($name)
     {
         return ucwords(str_replace('_', ' ', $name));
     }
 
+    /**
+     * return array of values read from metadata, for dropdown box
+     *
+     * @return array
+     */
     protected function getDropDownValues()
     {
-    	$valuesFromArguments = $this->getAttrib('orderDropDownMap');
-    	if(isset($valuesFromArguments) && is_array($valuesFromArguments)) {
-    		return $valuesFromArguments;
-    	} else {
-	        $ret = array();
-	        foreach($this->_metadata as $column) {
-	            $ret[$column['COLUMN_NAME']] = self::humanReadableColumn($column['COLUMN_NAME']);
-	        }
-	        return $ret;
-    	}
+        $valuesFromArguments = $this->getAttrib('orderDropDownMap');
+        if (isset($valuesFromArguments) && is_array($valuesFromArguments)) {
+            return $valuesFromArguments;
+        } else {
+            $ret = array();
+            foreach ($this->_metadata as $column) {
+                $ret[$column['COLUMN_NAME']] =
+                    self::humanReadableColumn($column['COLUMN_NAME']);
+            }
+            return $ret;
+        }
     }
 
+    /**
+     * init
+     */
     public function init()
     {
         $this->setMethod('post');
@@ -72,20 +98,24 @@ abstract class Crud_Forms_Order_Abstract extends Zend_Form
            $element->setLabel('Order By');
             $dropDownValues = $this->getDropDownValues();
             $columns = array_keys($this->_metadata);
-            foreach($dropDownValues as $k => $v) {
+            foreach ($dropDownValues as $k => $v) {
                 $key = is_int($k) ? $v : $k;
                 if (!$this->_columnNameChecks || in_array($key, $columns)) {
-                    $element->addMultiOption($key ,$v);
+                    $element->addMultiOption($key, $v);
                 } else {
-                    trigger_error('order: column [' . $key . '] not found in the columns list '.print_r($columns,1), E_USER_WARNING);
+                    trigger_error(
+                        'order: column [' . $key . '] not found in the '
+                        . 'columns list ' . print_r($columns, 1),
+                        E_USER_WARNING
+                    );
                 }
                 
             }
             $this->addElement($element);
 
          $element = new Zend_Form_Element_Select(self::ORDER_DIRECTION_NAME);
-            $element->addMultiOption('asc','Ascending');
-            $element->addMultiOption('desc','Descending');
+            $element->addMultiOption('asc', 'Ascending');
+            $element->addMultiOption('desc', 'Descending');
             $this->addElement($element);
 
         $element = new Zend_Form_Element_Submit('bt_order_submit');
@@ -93,43 +123,56 @@ abstract class Crud_Forms_Order_Abstract extends Zend_Form
             $this->addElement($element);
 
         //set decorator
-        $this->setElementDecorators(array( //$decorators
-            'viewHelper',
-            'Errors',
-            array('Description', array('tag' => 'span', 'class' => 'description')),
-            array(
-                array('data' => 'HtmlTag'),
-                array('tag' => 'span') //td
-            ),
-            array('Label', array('tag' => 'span')), //td
-            array(
-                array('row'=>'HtmlTag'),
-                array('tag'=>'span') //tr
-            )
-        ));
-
-        $this->setDecorators(array(
-            'FormElements',
-            array(
-                array('data' => 'HtmlTag'),
-                array('tag' => 'span') //table
+        $this->setElementDecorators(
+            array(//$decorators
+                'viewHelper',
+                'Errors',
+                array(
+                    'Description',
+                    array('tag' => 'span', 'class' => 'description')
                 ),
-            'Form'
+                array(
+                    array('data' => 'HtmlTag'),
+                    array('tag' => 'span') //td
+                ),
+                array('Label', array('tag' => 'span')), //td
+                array(
+                    array('row'=>'HtmlTag'),
+                    array('tag'=>'span') //tr
+                )
             )
         );
-        //populate // isset($this->_postData['form_order_submitted'])
-        if ($this->_queryData[self::ORDER_PARAM_NAME] && $this->_queryData[self::ORDER_DIRECTION_NAME]) {
-            //pd($this,$this->_queryData);
+
+        $this->setDecorators(
+            array(
+                'FormElements',
+                array(
+                    array('data' => 'HtmlTag'),
+                    array('tag' => 'span') //table
+                    ),
+                'Form'
+            )
+        );
+        if (
+            $this->_queryData[self::ORDER_PARAM_NAME]
+            && $this->_queryData[self::ORDER_DIRECTION_NAME]
+        ) {
             $this->populate($this->_queryData);
         }
 
     }
 
+    /**
+     * render: add extra script (class when changing order)
+     *
+     * @param Zend_View_Interface $view
+     * @return string
+     */
     public function render(Zend_View_Interface $view = null)
     {
         $addText = '<script type="text/javascript">
             $(document).ready(function() {
-                $("form.form_order select").change(function(){
+                $("form.form_order select").change(function() {
                     $("#bt_order_submit").addClass("buttonToClick");
                 });
             });

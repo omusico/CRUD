@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Name
+ * abstract ajax controller
  *
  * @category  Crud class
  * @package   Crud
@@ -10,10 +10,10 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-abstract class Crud_Controller_AjaxAbstract extends Zend_Controller_Action 
+abstract class Crud_Controller_AjaxAbstract
+    extends Zend_Controller_Action
 {
     protected $_setHeaderPlainText = true;
-
 
     /*
      * Disables layout, view and set plain text
@@ -21,7 +21,8 @@ abstract class Crud_Controller_AjaxAbstract extends Zend_Controller_Action
     public function postDispatch()
     {
         //disable layout and view
-        Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->setNoRender(true);
+        Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')
+            ->setNoRender(true);
         $layout = Zend_Layout::getMvcInstance();
         if ($layout instanceof Zend_Layout) {
             $layout->disableLayout(); //noLayout

@@ -10,6 +10,8 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Element_SelectStatus extends Zend_Form_Element_Select {
-   public $options = array(1=>'Disabled (1)',0=>'Active (0)');
+class Crud_Forms_Element_SelectStatus 
+    extends Zend_Form_Element_Select
+{
+   public $options = array(1=>'Disabled (1)', 0=>'Active (0)');
 }

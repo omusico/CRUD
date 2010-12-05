@@ -10,8 +10,10 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Helpers_List_YN  extends Zend_View_Helper_Abstract {
-    public function yn($val){
+class Crud_Forms_Helpers_List_YN  extends Zend_View_Helper_Abstract
+{
+    public function yn($val)
+    {
         $ret = array('y'=>'Yes', 'n'=>'No');
         return isset($ret[$val]) ? $ret[$val] : 'nd';
     }

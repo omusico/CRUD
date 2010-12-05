@@ -1,6 +1,6 @@
 <?php
 /**
- * must define $_metadata and the ctor !!!
+ * Helper for Images
  *//**
  * Class Name
  *
@@ -15,6 +15,8 @@
 class Crud_Helpers_Image
 {
     /**
+     * Convert image to jpeg, using imagemagick or gd if not available
+     *
      * @throws Zend_View_Exception
      * @param array options: sourcePath, outputPath, outputWidth(in pixels),
      * outputHeight=null, method='gd', quality=75, maxWidth=2048
@@ -24,20 +26,27 @@ class Crud_Helpers_Image
         $sourcePath = $options['sourcePath'];
         $outputPath = $options['outputPath'];
         $outputWidth = (int)$options['outputWidth'];
-        $outputHeight = isset($options['outputHeight']) ? $options['outputHeight'] : null;
-        $method =  isset($options['method']) ? $options['method'] : 'gd'; //default
+        $outputHeight = isset($options['outputHeight'])
+                      ? $options['outputHeight'] : null;
+        $method =  isset($options['method']) ? $options['method'] : 'gd';
         $quality = isset($options['quality']) ? $options['quality'] : 75;
         $maxWidth = isset($options['maxWidth']) ? $options['maxWidth'] : 2048;
 
         //checks
         if ($outputWidth < 1 || $outputWidth > $maxWidth) {
-            throw new Zend_View_Exception ('width must be at least 1px and at maximum '.$maxWidth);
+            throw new Zend_View_Exception (
+                'width must be at least 1px and at maximum ' . $maxWidth
+            );
         }        
         if (!file_exists($sourcePath)) {
-            throw new Zend_View_Exception( 'Input file ['.$sourcePath.'] does not exists' );
+            throw new Zend_View_Exception(
+                'Input file ['.$sourcePath.'] does not exists'
+            );
         }
         if (!is_writable(dirname($outputPath))) {
-            throw new Zend_View_Exception( 'Unable to write into ' . dirname($outputPath) );
+            throw new Zend_View_Exception(
+                'Unable to write into ' . dirname($outputPath)
+            );
         }
         
         if ($method=='commandline') {
@@ -50,65 +59,94 @@ class Crud_Helpers_Image
            return file_exists($outputPath);
         } else {
             if (!extension_loaded('gd')) {
-                throw new Zend_View_Exception( 'PHP gd2 extension not loaded');
+                throw new Zend_View_Exception('PHP gd2 extension not loaded');
             }
             //gd conversion
             $inputImageSize = getimagesize($sourcePath);
-            $img_src = self::imageCreateFromMime($sourcePath, $inputImageSize['mime']);
-            if (!$img_src) {
-                throw new Zend_View_Exception('Unable to open the uploaded image');
+            $imgSrc = self::imageCreateFromMime(
+                $sourcePath, $inputImageSize['mime']
+            );
+            if (!$imgSrc) {
+                throw new Zend_View_Exception(
+                    'Unable to open the uploaded image'
+                );
             }
             
             if (!($inputImageSize[0] * $inputImageSize[1])) {
                 throw new Zend_View_Exception(
-                        'Unable to calculate the the size of the uploaded image'
+                    'Unable to calculate the the size of the uploaded image'
                 );
             }
-            if (!$outputHeight) {  //if height not specified or null (default), calculate it !
+            if (!$outputHeight) {  
+                // if height not specified or null (default), calculate it !
                 $outputHeight = self::calculateHeightByRatio(
                     $inputImageSize[0],
                     $inputImageSize[1],
                     $outputWidth
                 );
             }
-            $img_dst = imagecreatetruecolor($outputWidth, $outputHeight);
+            $imgDst = imagecreatetruecolor($outputWidth, $outputHeight);
 
             if (!imagecopyresampled(
-                $img_dst, $img_src, 0, 0, 0, 0,
-                $outputWidth, $outputHeight, $inputImageSize[0], $inputImageSize[1]
+                $imgDst, $imgSrc, 0, 0, 0, 0,
+                $outputWidth, $outputHeight,
+                $inputImageSize[0], $inputImageSize[1]
             )
             ) {
-                throw new Zend_View_Exception('Unable to recompress the uploaded image');
+                throw new Zend_View_Exception(
+                    'Unable to recompress the uploaded image'
+                );
             }
-            return imagejpeg($img_dst, $outputPath, $quality);
+            return imagejpeg($imgDst, $outputPath, $quality);
         }
     }
 
-
-    private static function calculateHeightByRatio($originalW, $originalH, $maxFrameWidth)
+    /**
+     * calculateHeightByRatio
+     *
+     * @param int $originalW
+     * @param int $originalH
+     * @param int $maxFrameWidth
+     * @return int
+     */
+    private static function calculateHeightByRatio(
+        $originalW, $originalH, $maxFrameWidth
+    )
     {
-        //calculate ratio $originalW : $originalH ==== $maxFrameWidth : <RETURN VAL>
+        //calculate ratio $originalW : $originalH ==== $maxFrameWidth
+        //  : <RETURN VAL>
         return round($originalH * $maxFrameWidth / $originalW, 0);
     }
 
-    private static function imageCreateFromMime($sourcePath, $mime )
+    /**
+     * Create image resource from the mime specified
+     *
+     * @param string $sourcePath
+     * @param string $mime
+     * @return resource
+     */
+    private static function imageCreateFromMime($sourcePath, $mime)
     {
-        
-        switch ($mime){
+        switch ($mime) {
             case 'image/jpeg':
                 return imagecreatefromjpeg($sourcePath);
             // case 'image/x-ms-bmp':
-            //     return imagecreatefromxbm( $sourcePath );
+            //     return imagecreatefromxbm($sourcePath);
             case 'image/gif':
                 return imagecreatefromgif($sourcePath);
             case 'image/png':
                 return imagecreatefrompng($sourcePath);
             default:
-                 throw new Zend_View_Exception(sprintf('Type %s not supported', $mime));
+                throw new Zend_View_Exception(
+                    sprintf(
+                        'Type %s not supported', $mime
+                    )
+                );
         }
         return false;
     }
 
+    
     /** return file extensions
      *
      * @param <type> $fileName

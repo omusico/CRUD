@@ -34,7 +34,7 @@ class Crud_Helpers_Cache
         //$dirExists = file_exists($options->backEndOptions->cache_dir);
         $dirExists = is_writable($options->backEndOptions->cache_dir);
 
-        if ($enabled && !$dirExists ) {
+        if ($enabled && !$dirExists) {
             $logger = Zend_Registry::get('log');
             $logger->INFO('cache folder missing or not writable');
         }

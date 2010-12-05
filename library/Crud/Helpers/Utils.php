@@ -1,6 +1,6 @@
 <?php
 /**
- * must define $_metadata and the ctor !!!
+ * various static methods
  *//**
  * Class Name
  *
@@ -14,16 +14,17 @@
  */
 class Crud_Helpers_Utils
 {
-
     
     public static function getUserIdOrZero()
     {
         $user = Zend_Auth::getInstance()->getIdentity();
-        return ( $user && is_array($user) && isset($user['id']) ) ? $user['id'] : 0;
+        return ($user && is_array($user) && isset($user['id']))
+               ? $user['id'] : 0;
     }
 
 
-    /** clean a string, leaving only aplhanumeric chars and spaces
+    /**
+     *  Clean a string, leaving only aplhanumeric chars and spaces
      *
      * @param string $q
      * @return string

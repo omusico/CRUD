@@ -1,6 +1,6 @@
 <?php
 /**
- * must define $_metadata and the ctor !!!
+ * breadcrumb manager, uses registry
  *//**
  * Class Name
  *

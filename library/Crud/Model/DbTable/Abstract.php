@@ -21,21 +21,42 @@ abstract class Crud_Model_DbTable_Abstract
 
     protected $_sqlAlias = null;
 
+    /**
+     * ctor
+     *
+     * @param array $config
+     */
+    public function __construct($config = array()) //needed ?
+    {
+        parent::__construct($config);
+    }
+
+    /**
+     * force class to calculate metadata and returns it
+     *
+     * @return array
+     */
     public function getMetadata()
     {
         if (empty($this->_metadata)) {
             $this->_setupMetadata();
         }
-        // pd($this->_metadata);
         return $this->_metadata;
     }
 
+    /**
+     * Get record name in a readable name (for delete action)
+     *
+     * @param string $pk
+     * @return string
+     */
     public function getRecordHumanReadableName($pk)
     {
         return 'with "Id" equal to ' . $pk;
     }
 
-    /** Return the prefix of the model table used in _getSelectForPaginator()
+    /**
+     * Return the prefix of the model table used in _getSelectForPaginator()
      *
      * @return string e.g: "b." or ""
      */
@@ -48,13 +69,17 @@ abstract class Crud_Model_DbTable_Abstract
     /*
      * Returns Zend_Paginator_Adapter_DbTableSelect. Override to apply JOINs. 
      * Used from paginator
+     *
+     * @return Zend_Db_Select
+     *
      */
     protected function _getSelectForPaginator()
     {
         return $this->select();
     }
 
-    /** Return the primary key, or the string
+    /**
+     * Return the primary key, or the string
      *  (if the primary key is not compound)
      *
      * @return array|string primary key of the model
@@ -69,7 +94,8 @@ abstract class Crud_Model_DbTable_Abstract
         }
     }
 
-   /** Return record by PK
+   /**
+    * Return record by PK
     *
     * @param string|array $idOrWhere where or array to select.
     *        If a single value, "<primary key> = ?" is prefixed
@@ -85,7 +111,8 @@ abstract class Crud_Model_DbTable_Abstract
         if (!$row) {
             if ($exceptions) {
                 throw new Zend_Db_Exception(
-                    'Could not find row with PK ' . print_r($idOrWhere, 1)
+                    'Could not find row with PK '
+                    . print_r($idOrWhere, 1)
                 );
             } else {
                 return array();
@@ -94,29 +121,35 @@ abstract class Crud_Model_DbTable_Abstract
         
         return $row->toArray();
     }
-    
+
+    /**
+     * Used for search action
+     *
+     * @param <type> $row
+     * @return <type>
+     */
     public function getNameAutoComplete($row)
     {
         return 'implement getNameAutoComplete in the model';
     }
 
-    public function __construct($config = array()) //needed ?
-    {
-        parent::__construct($config);
-    }
+    
 
     /**
+     * return titles + array to make CSV
      *
+     * @param Zend_Db_Select $where
+     * @return array array(titles and data from fetchall->toArray)
      */
     public function getForCSV($where = null)
     {
         $data = $this->fetchAll($where)->toArray();
         $titles = isset($data[0]) ? array_keys($data[0]) : array();
-        #pd($titles, $data);
         return array($titles, $data);
     }
 
-    /** Return the Zend_Paginator_Adapter_DbTableSelect
+    /**
+     * Return the Zend_Paginator_Adapter_DbTableSelect
      *
      * @param array $filters
      * @param string $orderQuery
@@ -136,13 +169,13 @@ abstract class Crud_Model_DbTable_Abstract
             $select->reset(Zend_Db_Select::ORDER);
             $select->order(array($orderQuery));
         }
-        //pd($orderQuery,(string)$select);
         // create a new instance of the paginator adapter and return it
         $adapter = new Zend_Paginator_Adapter_DbTableSelect($select);
         return $adapter;
     }
 
-    /** Read the format, than make the proper where statement
+    /**
+     * Read the format, than make the proper where statement
      *
      * @param string|int|array $where
      * @return string|array
@@ -168,23 +201,32 @@ abstract class Crud_Model_DbTable_Abstract
                     || strpos($where, '<')!==false
                     || strpos($where, '>')!==false
                 ) {
-                    //$ret = $where;
                 } else { //only values -> prefix PK
                     $ret = $pkName . "='". $where."'"; //TODO quote
                 }
             }
         }
-        #pd('_convertWhere', $where, $ret);
         return $ret;
     }
 
-    
+    /**
+     * delete record by where condition (array|string|int)
+     *
+     * @param array|string|int $where
+     * @return int
+     */
     public function delete($where)
     {
-        parent::delete($this->_convertWhere($where));
+        return parent::delete($this->_convertWhere($where));
     }
 
-
+    /**
+     * update record 
+     *
+     * @param array $data
+     * @param array|string|int $where
+     * @return int
+     */
     public function update(array $data, $where)
     {
         $ret = parent::update($data, $this->_convertWhere($where));
@@ -192,7 +234,13 @@ abstract class Crud_Model_DbTable_Abstract
     }
 
 
-    
+    /**
+     * Used for ajax actions. To override in subclasses
+     *
+     * @param <type> $q
+     * @param <type> $limit
+     * @return <type>
+     */
     public function search($q, $limit)
     {
         return array(
@@ -202,7 +250,7 @@ abstract class Crud_Model_DbTable_Abstract
         /* $select = $this->select();
          $select->from(
             $this->_name,
-            array('id', '_name'=>new Zend_Db_Expr("CONCAT(firstn ',lastn)")))
+            array('id', '_name'=>new Zend_Db_Expr("CONCAT(firstn ', lastn)")))
          ->orWhere(" email LIKE '%$q%'")
          ->orWhere(" firstname LIKE '%$q%'")
          ->orWhere(" lastname LIKE '%$q%'")
@@ -213,12 +261,24 @@ abstract class Crud_Model_DbTable_Abstract
 
     }
 
+    /**
+     * Return Zend_Db_Select for dropdown of parent tables,
+     * see  getForDropDown
+     *
+     * @return Zend_Db_Select
+     */
     protected function _getSelectForDropDown()
     {
         return $this->select();
     }
 
-
+    /** Fetches the select returned by _getSelectForDropDown,
+     *  and returns and array with keys=1st column and values=2nd col
+     *
+     * @param string $option
+     * @param string $value
+     * @return array
+     */
     public function getForDropDown($option=null, $value=null)
     {
         $ret = array(0=>'-- select one --');

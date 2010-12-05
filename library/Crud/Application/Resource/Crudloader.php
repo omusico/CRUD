@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Name
+ * Crudloader
  *
  * @category  Crud class
  * @package   Crud
@@ -13,6 +13,9 @@
  */
 class Crudloader extends Zend_Application_Resource_ResourceAbstract
 {
+  /**
+   * init
+   */
   public function init ()
   {
     $options = $this->getOptions();
@@ -21,6 +24,9 @@ class Crudloader extends Zend_Application_Resource_ResourceAbstract
     }
   }
 
+  /**
+   * modify autoloader by adding namespace for order and filter forms
+   */
   protected function _setCrudAutoloader()
   {
      $crudAutoloader = new Zend_Application_Module_Autoloader(

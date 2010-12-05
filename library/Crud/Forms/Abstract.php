@@ -1,6 +1,8 @@
 <?php
 /**
- * must define $_metadata and the ctor !!!
+ * Abstract CRUD form class
+ * Reads table metadata and add automatically components
+ *
  *//**
  * Class Name
  *
@@ -26,9 +28,10 @@ abstract class Crud_Forms_Abstract extends Zend_Form
      */
     protected  $_fixedValues = array();
     /*
-     * MAY BE DEFINED (it contains the metadata (Zend_Db_Table style) ), otherwise automatically taken from model source
+     * MAY BE DEFINED (it contains the metadata (Zend_Db_Table style)),
+     * otherwise automatically taken from model source
      * Array
-        (  [id] => Array
+        ( [id] => Array
                 (
                     [DATA_TYPE] => int
                     [NULLABLE] =>
@@ -47,13 +50,13 @@ abstract class Crud_Forms_Abstract extends Zend_Form
     protected  $_columns; //columns ls
 
     //additional html when rendering
-    protected  $_pre_additionalHTML  = '';
-    protected  $_post_additionalHTML = '';
-    protected  $_post_additionalJsCode = '';
+    protected  $_preAdditionalHTML  = '';
+    protected  $_postAdditionalHtml = '';
+    protected  $_postAdditionalJsCode = '';
     /*
-     * Fields used as INT but treated like TIMESTAMP YY-mm-dd h:i using javascript
+     * Fields used as INT but treated like TIMESTAMP YY-mm-dd h:i using js
      */
-    protected  $_fields_timestamps = array();
+    protected  $_fieldsTimestamps = array();
 
     /**
      * @var string the default date format output
@@ -70,11 +73,14 @@ abstract class Crud_Forms_Abstract extends Zend_Form
     const TYPE_INT = 'int';
     const TYPE_VARCHAR = 'varchar';
 
-    public    $_model = null; //change to protected ?
+    protected $_model = null; //change to protected ?
     protected $_submitOrder = 100;
     
     /**
-     * @param array $options Zend_Form classical options, 'fixed_values'=>array(...)
+     * ctor
+     *
+     * @param array $options Zend_Form classical options,
+     *        'fixed_values'=>array(...)
      * @param array $metadata
      */
     public function __construct($config = array())
@@ -89,7 +95,7 @@ abstract class Crud_Forms_Abstract extends Zend_Form
         }
         //set metadata asking the models
         $this->_metadata = $this->getMedatadaFromTheModel();
-        if ($this->_checkTableStructure){
+        if ($this->_checkTableStructure) {
             $this->_checkTableStructure();
         }
 
@@ -101,88 +107,9 @@ abstract class Crud_Forms_Abstract extends Zend_Form
         parent::__construct($config);
     }
 
-    public function populate(array $values)
-    {
-        
-        parent::populate($values);
-    }
-
-    public function getFixedValues()
-    {
-        return $this->_fixedValues;
-    }
-
-    abstract protected function getModel();
-
-    
-    /** return the getMetadata() of the model, instantiated inside this method
-     * @returns array
+    /**
+     * init
      */
-    public function getMedatadaFromTheModel()
-    {
-        return $this->_model->getMetadata();
-    }
-
-    public function getOrderForm($postData)
-    {
-        return null;//new Zend_Form()
-    }
-
-    public function getFilterForm($postData)
-    {
-        return null;//new Zend_Form()
-    }
-
-    public function render(Zend_View_Interface $view = null)
-    { 
-        return $this->_pre_additionalHTML . parent::render($view)
-               . '<script type="text/javascript">'
-               . $this->_post_additionalJsCode
-               . '</script>' . $this->_post_additionalHTML;
-    }
-
-    protected function _checkTableStructure()
-    {
-        $errs =  array();
-        $columns = array_keys($this->_metadata);
-        
-        if (!$this->_model->info(Zend_Db_Table_Abstract::PRIMARY)) {
-            $errs[] = ': PRIMARY KEY not defined !';
-        }
-        //pd($this->_metadata);
-        /*if ( ! isset($this->_metadata['id']) ){
-            $errs[] = ': column [id] not found !';
-        }
-
-        if ( !isset($this->_metadata['id']['PRIMARY']) || !$this->_metadata['id']['PRIMARY'] ){
-            $errs[] = ': column [id] is not primary';
-        }
-
-        if ( !isset($this->_metadata['id']['IDENTITY']) || !$this->_metadata['id']['IDENTITY'] ){
-            $errs[] = ': column [id] is not auto_increment !';
-        }*/
-
-        foreach($errs as $err){
-            trigger_error ( get_class($this) . $err , E_USER_WARNING  );
-        }
-    }
-
-    protected function _add_custom_elements() {
-       
-        /*
-         *   $this->_formElements[''] = ..
-         */
-    }
-
-    protected function _removeFixedElements()
-    {
-        foreach ($this->_fixedValues as $k => $v) {
-            if (isset($this->_formElements[$k])) {
-                unset($this->_formElements[$k]);
-            }
-        }
-    }
-
     public function init()
     {
         $this->setName('form_name');
@@ -192,13 +119,14 @@ abstract class Crud_Forms_Abstract extends Zend_Form
         $this->_add_custom_elements();
         $this->_removeFixedElements();
         $this->addElements($this->_formElements);
-        
+
         // decorator
-        /*if ($this->_decorator_mode=='table'){
-            $this->setElementDecorators(array( //$decorators
+        /*if ($this->_decorator_mode=='table') {
+            $this->setElementDecorators(array(//$decorators
                     'viewHelper',
                     'Errors',
-                    array('Description', array('tag' => 'span', 'class' => 'description')),
+                    array('Description',
+                    array('tag' => 'span', 'class' => 'description')),
                     array(
                         array('data' => 'HtmlTag'),
                         array('tag' => 'td')
@@ -222,12 +150,144 @@ abstract class Crud_Forms_Abstract extends Zend_Form
         }*/
     }
 
+    /**
+     * populate form
+     * @param array $values
+     */
+    public function populate(array $values)
+    {
+        //[..]
+        parent::populate($values);
+    }
+
+    /**
+     * getFixedValues
+     * @return array
+     */
+    public function getFixedValues()
+    {
+        return $this->_fixedValues;
+    }
+
+    /**
+     * get model, to implement
+     */
+    abstract protected function getModel();
+
+    
+    /**
+     * return the getMetadata() of the model, instantiated inside this method
+     * 
+     * @returns array
+     */
+    public function getMedatadaFromTheModel()
+    {
+        return $this->_model->getMetadata();
+    }
+
+    /**
+     * return order form
+     * @param array $postData
+     * @return Zend_Form|null
+     */
+    public function getOrderForm($postData)
+    {
+        return null;//new Zend_Form()
+    }
+
+    /**
+     * return filter form
+     * @param array $postData
+     * @return Zend_Form|null
+     */
+    public function getFilterForm($postData)
+    {
+        return null;//new Zend_Form()
+    }
+
+    /**
+     * render, add extra js code defined in fields
+     *
+     * @param Zend_View_Interface $view
+     * @return string
+     */
+    public function render(Zend_View_Interface $view = null)
+    { 
+        return $this->_preAdditionalHTML . parent::render($view)
+               . '<script type="text/javascript">'
+               . $this->_postAdditionalJsCode
+               . '</script>' . $this->_postAdditionalHtml;
+    }
+
+    /**
+     * Check PK, and others [...]
+     */
+    protected function _checkTableStructure()
+    {
+        $errs =  array();
+        $columns = array_keys($this->_metadata);
+        
+        if (!$this->_model->info(Zend_Db_Table_Abstract::PRIMARY)) {
+            $errs[] = ': PRIMARY KEY not defined !';
+        }
+        /*if (! isset($this->_metadata['id'])) {
+            $errs[] = ': column [id] not found !';
+        }
+
+        if (!isset($this->_metadata['id']['PRIMARY'])
+          || !$this->_metadata['id']['PRIMARY']) {
+            $errs[] = ': column [id] is not primary';
+        }
+
+        if (!isset($this->_metadata['id']['IDENTITY'])
+          || !$this->_metadata['id']['IDENTITY']) {
+            $errs[] = ': column [id] is not auto_increment !';
+        }*/
+
+        foreach ($errs as $err) {
+            trigger_error(get_class($this) . $err, E_USER_WARNING);
+        }
+    }
+
+    /**
+     * to implement to customize/add form elements
+     */
+    protected function _add_custom_elements()
+    {
+       
+        /*
+         *   $this->_formElements[''] = ..
+         */
+    }
+
+    /**
+     * remove element with fixed values (as not editable)
+     */
+    protected function _removeFixedElements()
+    {
+        foreach ($this->_fixedValues as $k => $v) {
+            if (isset($this->_formElements[$k])) {
+                unset($this->_formElements[$k]);
+            }
+        }
+    }
+
+    
+    /**
+     * check if metadata option is true
+     *
+     * @param string $key
+     * @param string $defVal
+     * @return bool
+     */
     protected function _isOn($key, $defVal = null)
     {
-        return isset($this->_currentRow[$key]) ? $this->_currentRow[$key] : $defVal;
+        return isset($this->_currentRow[$key])
+               ? $this->_currentRow[$key] : $defVal;
     }    
 
-    /** fetches the metadata and creates the form + sumbit element
+    /**
+     * fetches the metadata and creates the form + sumbit element
      *
      */
     protected function _generateElements()
@@ -238,29 +298,41 @@ abstract class Crud_Forms_Abstract extends Zend_Form
         if ($this->_whiteListElements) {
             //order  $this->_metadata using order in $this->_whiteListElements
             $metadataNew = array();
-            foreach($this->_whiteListElements as $wle) {
-                if (isset($this->_metadata[$wle])){
+            foreach ($this->_whiteListElements as $wle) {
+                if (isset($this->_metadata[$wle])) {
                     $metadataNew[$wle] = $this->_metadata[$wle];
                 } else {
-                    trigger_error(get_class().": whitelist element '$wle' not found in the db");
+                    trigger_error(
+                        get_class()
+                        . ": whitelist element '$wle' not found in the db"
+                    );
                 }
             }
             $this->_metadata = $metadataNew;
         }
 
         foreach ($this->_metadata as $field => $this->_currentRow) {
-            //if($field=='description') pd($this->_currentRow);
+            //if ($field=='description') pd($this->_currentRow);
             if (
-                // allowed whitelist if whitelist not defined or in the whitelist
-                (!$this->_whiteListElements || in_array($field, $this->_whiteListElements)) &&
-                // allowed blacklist if blacklist not defined or NOT in teh blacklist
-                (!$this->_blackListElements || !in_array($field, $this->_blackListElements))
-            ){
+                // allowed whitelist if whitelist not defined in it
+                (
+                    !$this->_whiteListElements
+                    || in_array($field, $this->_whiteListElements)
+                ) &&
+                // allowed blacklist if blacklist not defined
+                // or NOT in teh blacklist
+                (
+                    !$this->_blackListElements
+                    || !in_array($field, $this->_blackListElements)
+                 )
+            ) {
                 //hidden fields for not single primary keys auto-increment
                 if ($this->_isOn('PRIMARY')
                      &&
-                    count($this->_model->info(Zend_Db_Table_Abstract::PRIMARY)) === 1 //not compound
-                     &&
+                    count(
+                        $this->_model->info(Zend_Db_Table_Abstract::PRIMARY)
+                    ) === 1 //not compound
+                    &&
                     $this->_isOn('IDENTITY') //auto-increment
                 ) {
                     $element = new Zend_Form_Element_Hidden($field);
@@ -272,7 +344,12 @@ abstract class Crud_Forms_Abstract extends Zend_Form
                     /*if ($field === 'password2') { //TO REVISE
                         $element = new Zend_Form_Element_Password($field);
                     } else */
-                    if (in_array($this->_currentRow['DATA_TYPE'], array('text','mediumtext','longtext'))) {
+                    if (
+                        in_array(
+                            $this->_currentRow['DATA_TYPE'],
+                            array('text', 'mediumtext', 'longtext')
+                        )
+                    ) {
                         $element = new Zend_Form_Element_Textarea($field);
                         $element->setAttrib('rows', 3)->setAttrib('cols', 40);
                     } else {
@@ -281,7 +358,7 @@ abstract class Crud_Forms_Abstract extends Zend_Form
                     }
 
                     //label
-                    $label = str_replace('_',' ',ucfirst($field));
+                    $label = str_replace('_', ' ', ucfirst($field));
                     if ($this->_isOn('NULLABLE')) {
                         $element->setLabel($label);
                         $element->setRequired(false);
@@ -291,22 +368,32 @@ abstract class Crud_Forms_Abstract extends Zend_Form
                     }
 
                     //timestamp/date/datetime
-                    $timeFormats = array('timestamp'=>'Y-m-d H:i:s','date'=>'Y-m-d','datetime'=>'Y-m-d H:i:s');
-                    $timeFormat = isset( $timeFormats[$this->_isOn('DATA_TYPE')] ) ? $timeFormats[$this->_isOn('DATA_TYPE')] : null;
-                    if ( $timeFormat ){
-                        if ($this->_isOn('DEFAULT') == 'CURRENT_TIMESTAMP'){
-                            $element->setValue( date($timeFormat, time()) );
+                    $timeFormats = array(
+                        'timestamp'=>'Y-m-d H:i:s',
+                        'date'=>'Y-m-d',
+                        'datetime'=>'Y-m-d H:i:s'
+                    );
+                    $timeFormat =
+                        isset($timeFormats[$this->_isOn('DATA_TYPE')])
+                        ? $timeFormats[$this->_isOn('DATA_TYPE')] : null;
+                    if ($timeFormat) {
+                        if ($this->_isOn('DEFAULT') == 'CURRENT_TIMESTAMP') {
+                            $element->setValue(date($timeFormat, time()));
                         }
-                        /*$this->_post_additionalJsCode .=
+                        /*$this->_postAdditionalJsCode .=
                                 Crud_Forms_Helpers_DatePicker::getJs($field);*/
                     }
 
                     //length validator
                     if ($this->_isOn('LENGTH')) {
                         $element->addValidator(
-                            new Zend_Validate_StringLength(array('max' => $this->_isOn('LENGTH')))
-                            );
-                        $element->setAttrib('MAX_LENGTH', $this->_isOn('LENGTH'));
+                            new Zend_Validate_StringLength(
+                                array('max' => $this->_isOn('LENGTH'))
+                            )
+                        );
+                        $element->setAttrib(
+                            'MAX_LENGTH', $this->_isOn('LENGTH')
+                        );
                     }
                 }
 
@@ -325,9 +412,6 @@ abstract class Crud_Forms_Abstract extends Zend_Form
             ->setOrder($this->_submitOrder)
             ->setLabel('Save');
 
-        /*$this->_formElements['_discard'] = new Zend_Form_Element_Submit('_discard');
-        $this->_formElements['_discard']->setAttrib('onclick', 'hystory.go(-1)');*/
-
     }
 
     
@@ -337,30 +421,37 @@ abstract class Crud_Forms_Abstract extends Zend_Form
      */
     public function getColumns()
     {
-        if ($this->_columns){
+        if ($this->_columns) {
             return $this->_columns;
         } else {
-            //temp solution, better to use _metadata and instersect with form_elements
+            //temp solution, better to use _metadata
+            //and instersect with form_elements
             $formElem = $this->_formElements;
             unset($formElem['submit']);
             return array_keys($formElem);
         }
     }
 
-
+    /**
+     * return metadata
+     *
+     * @return array
+     */
     public function getMetadata()
     {
         return $this->_metadata;
     }
 
-    /** return the code for the ajax search, to append to  $this->_post_additionalJsCode
+    /**
+     * Return the code for the ajax search,
+     * to append to  $this->_postAdditionalJsCode
      *
      * @param <type> $options
      * @return <type>
      */
     protected function addAjaxJs($options)
     {
-        if (isset($this->_fixedValues[$options['id']]) ) {
+        if (isset($this->_fixedValues[$options['id']])) {
            return '';
         } else {
             return  Crud_Forms_Helpers_AutoComplete::getJsAfterForm(
@@ -369,14 +460,15 @@ abstract class Crud_Forms_Abstract extends Zend_Form
         }
     }
 
-    /** set the values that will be added into $_fixedValues property of the form
+    /**
+     * set the values that will be added
+     * into $_fixedValues property of the form
      *
      */
     protected function setFormFixedValues(array $val)
     {
         $this->_formFixedValues = $val;
     }
-
 
     
 }

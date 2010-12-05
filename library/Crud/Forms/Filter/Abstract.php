@@ -1,6 +1,7 @@
 <?php
 /**
- * general form for filtering data. Ctor needs the model (to take the metadata) AND post data to populate the form.
+ * general form for filtering data. Ctor needs the model (to take the metadata)
+ * AND post data to populate the form.
  *//**
  * Class Name
  *
@@ -17,9 +18,10 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
     protected $_model;
     protected $_metadata;
     protected $_postData;
-    protected $_whitelist = null; //define = array() to use ONLY overWriteOptions
+    protected $_whitelist = null; //define = array() to use overWriteOptions
     protected $_blacklist = null;
     protected $_overWriteOptions = null;
+    protected $_labels = array();
 
     protected $_subForms;
 
@@ -39,10 +41,17 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
         self::CONTAINS       =>'Contains',
         self::LESS_THAN      =>'Less Than',
         self::DIFFERENT_FROM =>'Different From',
-        #self::IS_NULL        =>'Is null',
-        #self::IS_NOT_NULL    =>'Is not null'
+        //self::IS_NULL        =>'Is null',
+        //self::IS_NOT_NULL    =>'Is not null'
     );
 
+    /**
+     * Ctor
+     *
+     * @param <type> $options
+     * @param Crud_Model_Interface $model
+     * @param <type> $postData
+     */
     public function __construct(
         $options, Crud_Model_Interface $model, $postData = array()
     )
@@ -53,58 +62,75 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
         parent::__construct($options);
     }
 
+    /**
+     * To override if needed
+     *
+     */
     protected function _getElementValuesRules()
     {
         return array();
     }
 
-    /** Generates rules for filter form. reading from metadata
+    /**
+     * Generates rules for filter form. reading from metadata
+     *
      * @return array rules using custom format
      */
     protected function _getElementRules()
     {
         $columns = array_keys($this->_metadata);
         //fetch metadata and make
-        //pd($this->_metadata);
         foreach ($this->_metadata as $v) {
             $name = $v['COLUMN_NAME'];
 
-            //if whitelist is not defined OR the element is     in the whitelist AND
-            //   blacklist                OR                NOT        blacklist
-            if ( (is_null($this->_whitelist) || in_array($name, $this->_whitelist) ) &&
-                 (is_null($this->_blacklist) || !in_array($name, $this->_blacklist) ) )
-            {
+            if (
+                (
+                    //i f whitelist is not defined ...
+                    is_null($this->_whitelist)
+                     //OR the element is     in the whitelist AND
+                    || in_array($name, $this->_whitelist)
+                )
+                &&
+                (
+                    // same with blacklist
+                    is_null($this->_blacklist)
+                    || !in_array($name, $this->_blacklist)
+                )
+            ) {
                 //make default options depending on the metadata
                 $options = array();
-                if (in_array($v['DATA_TYPE'], array('bigint', 'tinyint', 'int'))) {
+                if (
+                    in_array($v['DATA_TYPE'], array('bigint', 'tinyint', 'int'))
+                ) {
                     $options[] = self::EQUAL_TO;
                     $options[] = self::GREATER_THAN;
                     $options[] = self::LESS_THAN;
                     $options[] = self::DIFFERENT_FROM;
-                } else if (in_array($v['DATA_TYPE'], array('varchar', 'char', 'text'))) {
+                } else if (
+                    in_array($v['DATA_TYPE'], array('varchar', 'char', 'text'))
+                ) {
                     $options[] = self::CONTAINS;
                     $options[] = self::EQUAL_TO;
-                } else if (in_array($v['DATA_TYPE'], array('datetime'))) { //TODO add datepicker
+                } else if (in_array($v['DATA_TYPE'], array('datetime'))) {
                     $options[] = self::GREATER_THAN;
                     $options[] = self::LESS_THAN;
-                } else if (substr($v['DATA_TYPE'],0,4)=='enum') { //TODO add value options
+                } else if (substr($v['DATA_TYPE'], 0, 4)=='enum') {
                     $options[] = self::EQUAL_TO;
                 } else { //text ??
                      $options[] = self::EQUAL_TO;
                      $options[] = self::CONTAINS;
                 }
-                /*if($v['NULLABLE']){
-                    $options[] = self::IS_NULL;
-                    $options[] = self::IS_NOT_NULL;
-                }*/
                 $ret[$name] = $options;
             }
         }
-        //override options
-        foreach((array)$this->_overWriteOptions as $k=>$v){
-            if (!in_array($k, $columns)){
-                trigger_error('filter: column [' . $k . '] not found in the columns list ' 
-                              . print_r($columns,1), E_USER_WARNING);
+
+        foreach ((array)$this->_overWriteOptions as $k=>$v) {
+            if (!in_array($k, $columns)) {
+                trigger_error(
+                    'filter: column [' . $k . '] not found in the columns list '
+                    . print_r($columns, 1),
+                    E_USER_WARNING
+                );
             }
             $ret[$k] = $v;
         }
@@ -112,9 +138,12 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
         return $ret;
     }
 
-    protected $_labels = array(
-    );
-
+    /**
+     * Get label name for filter
+     *
+     * @param string $fieldName
+     * @return string
+     */
     protected function getLabel($fieldName)
     {
         if (isset($this->_labels[$fieldName])) {
@@ -126,7 +155,9 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
         }
     }
 
-
+    /**
+     * Init
+     */
     public function init()
     {
         //form attrib
@@ -136,8 +167,14 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
         $this->setAttrib('class', 'subforms form_filter');
 
         //apply & reset
-        $this->addElement(new Zend_Form_Element_Submit('bt_submit', 'Apply selected filter(s)'));
-        $this->addElement(new Zend_Form_Element_Reset('bt_resetall', 'Reset all filters'));
+        $this->addElement(
+            new Zend_Form_Element_Submit(
+                'bt_submit', 'Apply selected filter(s)'
+            )
+        );
+        $this->addElement(
+            new Zend_Form_Element_Reset('bt_resetall', 'Reset all filters')
+        );
 
         $element = new Zend_Form_Element_Hidden('form_filter_submitted');
             $element->setValue(1);
@@ -159,7 +196,7 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
             $element = new Zend_Form_Element_Select('mode');
                 $element->setLabel('');
                 if (empty($options)) {
-                    foreach(self::$modes as $k=>$v) {
+                    foreach (self::$modes as $k=>$v) {
                         $element->addMultiOption($k, $v);
                     }
                 } else {
@@ -173,15 +210,19 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
                 }
                 $this->_subForms[$name]->addElement($element);
             //set value field depending on the field type
-            $dataType = $this->_metadata[$name]['DATA_TYPE']; //warning => field mispelling (better to show)
+            //warning => field mispelling (better to show)
+            $dataType = $this->_metadata[$name]['DATA_TYPE'];
             if (substr($dataType, 0, 4)=='enum') {
                     $element = new Zend_Form_Element_Select('val');
-                    //parse enum('y','n')=> array(y,n)
-                     preg_match_all("#\'([^']+)\'#", $dataType, $values); //pd($dataType,$values[0]);
+                    //parse enum('y', 'n')=> array(y, n)
+                     preg_match_all("#\'([^']+)\'#", $dataType, $values);
                      foreach ($values[1] as $v) {
                         $element->addMultiOption($v, ' ' . $v . ' ');
                      }
-                     $element->setAttrib('size', count($element->getMultiOptions()));
+                     $element->setAttrib(
+                         'size',
+                         count($element->getMultiOptions())
+                     );
             } else {
                 $element = new Zend_Form_Element_Text('val');
                 $element->setAttrib('size', $this->_textSize);
@@ -201,19 +242,26 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
         $this->addSubForms($this->_subForms);
 
         //apply & reset
-        $this->addElement(new Zend_Form_Element_Submit('bt_submit2', 'Apply selected filter(s)'));
-        $this->addElement(new Zend_Form_Element_Button('bt_resetall2', 'Reset all filters'));
+        $this->addElement(
+            new Zend_Form_Element_Submit(
+                'bt_submit2', 'Apply selected filter(s)'
+            )
+        );
+        $this->addElement(
+            new Zend_Form_Element_Button('bt_resetall2', 'Reset all filters')
+        );
 
         /*$element = new Zend_Form_Element_Reset('reset');
             $element->setLabel('Reset filters');
             $this->addElement($element);*/
 
         //set decorators
-        /*foreach(array_merge($this->_subForms,array($this)) as $form){
-            $form->setElementDecorators(array( //$decorators
+        /*foreach (array_merge($this->_subForms, array($this)) as $form) {
+            $form->setElementDecorators(array(//$decorators
                 'viewHelper',
                 'Errors',
-                array('Description', array('tag' => 'span', 'class' => 'description')),
+                array('Description', array('tag' => 'span',
+                   'class' => 'description')),
                 array(
                     array('data' => 'HtmlTag'),
                     array('tag' => 'span') //td
@@ -246,21 +294,25 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
     /*public function populate(array $values)
     {
         pd($this->_elements);
-        foreach($values as $k => $v) {
+        foreach ($values as $k => $v) {
             $this->_elements[$k]->setLabel('SELECTEDDDD');
         }
 
-        #foreach()
+        //foreach ()
 
         return self::populate($values);
     }*/
 
+    /**
+     * Process existing elements
+     */
     public function _postProcessElements()
     {
         //to implement when needed
     }
 
-    /** Add extra Jquery script yto
+    /**
+     * Add extra JQuery scripts on fieldset
      *
      */
     public function render(Zend_View_Interface $view = null)
@@ -289,14 +341,16 @@ abstract class Crud_Forms_Filter_Abstract extends Zend_Form
                 updateFormFilterCheckBoxes();
 
                 /* update background at every tuck/untick */
-                $("form.form_filter input:checkbox").change(function(){
+                $("form.form_filter input:checkbox").change(function() {
                      updateFormFilterCheckBoxes();
                      makeFilterApplyBig();
                 });
                 
-                /* tick the select box and update background when clicking on input and select fields */
+                /* tick the select box and update background when clicking
+                 * on input and select fields */
                 var fieldChangeListener = function () {
-                     $(this).parent().parent().parent().find("input:checkbox").attr("checked", "checked");
+                     $(this).parent().parent().parent().find("input:checkbox")'
+                     .'.attr("checked", "checked");
                      updateFormFilterCheckBoxes();
                      makeFilterApplyBig();
                 }

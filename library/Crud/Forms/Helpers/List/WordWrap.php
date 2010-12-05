@@ -10,8 +10,11 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Helpers_List_WordWrap   extends Zend_View_Helper_Abstract {
-    public function wordWrap($val, $len = 50){
-        return wordwrap ( $val ,$len, '<br/>', true );
+class Crud_Forms_Helpers_List_WordWrap
+    extends Zend_View_Helper_Abstract
+{
+    public function wordWrap($val, $len = 50)
+    {
+        return wordwrap($val, $len, '<br/>', true);
     }
 }

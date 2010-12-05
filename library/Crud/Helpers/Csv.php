@@ -25,7 +25,9 @@ class Crud_Helpers_Csv
      */
     public static function arrayToCsv($titles, $data, $sep = ',', $delim = '"')
     {
-        if (!$titles || !$data) { return ''; }
+        if (!$titles || !$data) { 
+            return '';
+        }
         $ret = '';
         //merge rows
         array_unshift($data, $titles);
@@ -33,11 +35,11 @@ class Crud_Helpers_Csv
         foreach ($data as $row) {
             $cols = array();
             foreach ($row as $col) {
-                $cols[] = $delim . str_replace($delim, '\\'.$delim, $col) . $delim;
+                $cols[] = $delim . str_replace($delim, '\\'.$delim, $col)
+                        . $delim;
             }
             $ret .= implode($sep, $cols) . PHP_EOL;
         }
-        #pd($ret);
         return $ret;
     }
 

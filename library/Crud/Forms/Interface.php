@@ -13,6 +13,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-Interface Crud_Forms_Interface {
+Interface Crud_Forms_Interface
+{
    public function getMedatadaFromTheModel();
 }
