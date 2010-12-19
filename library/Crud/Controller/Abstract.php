@@ -135,7 +135,14 @@ abstract class Crud_Controller_Abstract
             $this->_separator,
             $actionName
         );
+
+        //set iframe layout
+        if ($this->getRequest()->getParam('iframe', 0)) {
+            $layout = Zend_Layout::getMvcInstance();
+            $layout->setLayout('iframe');
+        }
     }
+
 
     /**
     * Method called after $this->data is set
