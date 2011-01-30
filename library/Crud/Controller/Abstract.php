@@ -553,11 +553,11 @@ abstract class Crud_Controller_Abstract
      * Manage exceptions by setting $this->view->errors
      * and flashMessenger with errors
      *
-     * @param Zend_Excetpion $e
+     * @param Zend_Exception $e
      * @param array $options prefix, textError, textErrorDuplicate
      */
     public function manageOperationException(
-        Zend_Excetpion $e, $options = null
+        Zend_Exception $e, $options = null
     )
     {
         $prefix = !empty($options['prefix'])
