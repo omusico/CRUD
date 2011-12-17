@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud;
+
 /**
  * Config class
  * //TODO move to INI settings
@@ -11,7 +14,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Config
+class Config
 {
 
     const OPTION_JS_BASE_PATH = 'js_base_path';

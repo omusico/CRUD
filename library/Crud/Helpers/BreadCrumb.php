@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Helpers;
+
 /**
  * breadcrumb manager, uses registry
  *//**
@@ -12,7 +15,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Helpers_BreadCrumb
+class BreadCrumb
 {
     const REGISTRY_ID = '_breadcrumb';
     const SEPARATOR = ' &gt; ';
@@ -21,11 +24,11 @@ class Crud_Helpers_BreadCrumb
     private static function getValFromRegistry()
     {
         try {
-            $ar = Zend_Registry::get(self::REGISTRY_ID);
-        } catch (Zend_Exception $e) {
+            $ar = \Zend_Registry::get(self::REGISTRY_ID);
+        } catch (\Zend_Exception $e) {
             // 1st time: set 
-            Zend_Registry::set(self::REGISTRY_ID, array());
-            $ar = Zend_Registry::get(self::REGISTRY_ID);
+            \Zend_Registry::set(self::REGISTRY_ID, array());
+            $ar = \Zend_Registry::get(self::REGISTRY_ID);
         }
         return (array)$ar;
     }
@@ -37,7 +40,7 @@ class Crud_Helpers_BreadCrumb
 
     public static function reset()
     {
-         Zend_Registry::set(self::REGISTRY_ID, array());
+         \Zend_Registry::set(self::REGISTRY_ID, array());
     }
 
     /** prints the breadcrumbs bt reading registry
@@ -77,7 +80,7 @@ class Crud_Helpers_BreadCrumb
             }
         }
         $ar[$name] = array($link, $current);
-        $ar = Zend_Registry::set(self::REGISTRY_ID, $ar);
+        $ar = \Zend_Registry::set(self::REGISTRY_ID, $ar);
     }
 
     
@@ -89,7 +92,7 @@ class Crud_Helpers_BreadCrumb
     {
         $ar = self::getValFromRegistry();
         unset($ar[$index]);
-        $ar = Zend_Registry::set(self::REGISTRY_ID, $ar);
+        $ar = \Zend_Registry::set(self::REGISTRY_ID, $ar);
     }
 
 }

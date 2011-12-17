@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Helpers;
+
 /**
  * must define $_metadata and the ctor !!!
  *//**
@@ -13,7 +16,7 @@
  * @link      http://www.phpntips.com/crud
  */
 
-class Crud_Helpers_DbDiff
+class DbDiff
 {
 
     /**

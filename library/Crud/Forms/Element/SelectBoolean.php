@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Forms\Element;
+
 /**
  * Class Name
  *
@@ -10,7 +13,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Element_SelectBoolean extends Zend_Form_Element_Select
+class SelectBoolean extends \Zend_Form_Element_Select
 {
    public $options = array(1=>'Yes', 0=>'No');
 }

@@ -13,31 +13,32 @@
  */
 
 //add path manually
-//set_include_path('D:/wamp/www/ZendFramework-1.10.7-minimal/library');
+set_include_path(realpath(__DIR__.'/../'));
 
-require_once 'Zend/Console/Getopt.php';
-require_once 'Zend/Db/Table.php';
-require_once 'Zend/Registry.php';
+require_once 'Zend/Loader/Autoloader.php';
+Zend_Loader_Autoloader::getInstance();
 
 define('APP_MODULE', 'admin'); //TODO change controller template
 
 // declare CL options
-$zcg = new Zend_Console_Getopt(array(
+$zcg = new \Zend_Console_Getopt(array(
     //'module|m=s'     => 'Module name (e.g.: admin)',
     'table|t=s'    => 'Mysql table name',
-    'f'            => 'Force writing (overrides existing files)',
+    'f|force'      => 'Force writing (overrides existing files)',
     'database|d=s' => 'Database name'
 ));
 
 try {
     $zcg->parse();
-} catch (Zend_Console_Getopt_Exception $e) {
-    echo $e->getUsageMessage();
+    //get options and launch CrudCreator class methods
+    $args = $zcg->getRemainingArgs();
+    if (empty($args[0])) {
+        throw new \Zend_Console_Getopt_Exception('missing params');
+    }
+} catch (\Zend_Console_Getopt_Exception $e) {
+    echo "example: php -f zfcrud.php create crud Categories --table=categories --database=mydb\n". $e->getUsageMessage();
     exit;
 }
-
-//get options and launch CrudCreator class methods
-$args = $zcg->getRemainingArgs();
 
 if (strcasecmp($args[0], 'create')===0) {
    if (strcasecmp($args[1], 'crud')===0) {
@@ -47,7 +48,7 @@ if (strcasecmp($args[0], 'create')===0) {
        }
        echo 'Creating crud files for '.$crudAction ." ...\n";
        $cc = new CrudCreator(
-           $crudAction, APP_MODULE, $zcg->table, $zcg->database
+           $crudAction, APP_MODULE, $zcg->table, $zcg->database, $zcg->force
        );
        $cc->generateController();
        $cc->generateScripts();
@@ -71,6 +72,7 @@ class CrudCreator
     private $_table;
     private $_metadata;
     private $_templates;
+    private $_overwrite;
 
 
     /**
@@ -81,13 +83,14 @@ class CrudCreator
      * @param string $table
      * @param string $db
      */
-    function __construct($name, $module, $table, $db)
+    function __construct($name, $module, $table, $db, $overwrite = false)
     {
-        $this->_name    = ucfirst($name);
-        $this->_appPath = realpath(__DIR__ . '/../../application');
-        $this->_table   = $table;
+        $this->_name        = ucfirst($name);
+        $this->_appPath     = realpath(__DIR__ . '/../../application');
+        $this->_table       = $table;
+        $this->_overwrite   = $overwrite;
 
-        $db = Zend_Db::factory(
+        $db = \Zend_Db::factory(
             'Pdo_Mysql',
             array(
                 'host' => 'localhost',
@@ -160,7 +163,7 @@ class CrudCreator
      */
     function generateForm()
     {
-        $fileName = "{$this->_appPath}/forms/{$this->_name}.php";
+        $fileName = "{$this->_appPath}/library/Admin/Forms/{$this->_name}.php";
         $columns = implode(', ', array_keys($this->_metadata));
         $data = str_replace(
             array('[XXX]', '[COLUMNS]'),
@@ -176,7 +179,7 @@ class CrudCreator
      */
     function generateOrderForm()
     {
-        $fileName = "{$this->_appPath}/forms/order/{$this->_name}.php";
+        $fileName = "{$this->_appPath}/library/Admin/Forms/Order/{$this->_name}.php";
         $data = str_replace(
             array('[XXX]'),
             array($this->_name),
@@ -191,7 +194,7 @@ class CrudCreator
      */
     function generateFilterForm()
     {
-        $fileName = "{$this->_appPath}/forms/filter/{$this->_name}.php";
+        $fileName = "{$this->_appPath}/library/Admin/Forms/Filter/{$this->_name}.php";
         $data = str_replace(
             array('[XXX]'),
             array($this->_name),
@@ -206,7 +209,7 @@ class CrudCreator
      */
     function generateDbTable()
     {
-        $fileName = "{$this->_appPath}/models/DbTable/{$this->_name}.php";
+        $fileName = "{$this->_appPath}/library/Admin/Models/{$this->_name}.php";
         
 
         $primary = array();
@@ -235,7 +238,7 @@ class CrudCreator
     function write($file, $content)
     {
         //die($file);
-        if (file_exists($file)) {
+        if (!$this->_overwrite && file_exists($file)) {
             echo "$file already exists!\n";
         } else {
             $dir = dirname($file);
@@ -258,7 +261,7 @@ class CrudCreator
     $this->_templates['controller'] =  <<<DELIM
 <?php
 
-class Admin_XXXController extends Crud_Controller_Abstract
+class Admin_XXXController extends \Crud\Controller\AbstractCrudController
 {
 
     //protected \$_useInternalListView = true;
@@ -266,12 +269,12 @@ class Admin_XXXController extends Crud_Controller_Abstract
 
     protected function _getCrudModel()
     {
-        return new Application_Model_DbTable_XXX();
+        return new \Admin\Models\XXX();
     }
 
     protected function _getCrudForm()
     {
-        return new Application_Form_XXX();
+        return new \Admin\Forms\XXX();
     }
 
     public function init()
@@ -296,7 +299,7 @@ DELIM;
     '_table_navigation.phtml'
 );
 
-echo Crud_View_Helpers_Paginator::paginatorToTable(
+echo Crud\View\Helpers\\Paginator::paginatorToTable(
     \$this->data,
     \$this,
     [KEYS]
@@ -318,7 +321,11 @@ DELIM;
     $this->_templates['form'] = <<<DELIM
 <?php
 
-class Application_Form_[XXX] extends Crud_Forms_Abstract
+namespace Admin\Forms;
+
+use Admin;
+
+class [XXX] extends \Crud\Forms\AbstractForm
 {
     //protected \$_whiteListElements = array();
 
@@ -331,13 +338,13 @@ class Application_Form_[XXX] extends Crud_Forms_Abstract
 
     protected function getModel()
     {
-        return new Application_Model_DbTable_[XXX]();
+        return new \Admin\Models\[XXX]();
     }
 
 
     public function getOrderForm(\$formValues)
     {
-        return new Application_Form_Order_[XXX](
+        return new Order\[XXX](
             null,
             \$this->_model,
             \$formValues
@@ -346,7 +353,7 @@ class Application_Form_[XXX] extends Crud_Forms_Abstract
 
     public function getFilterForm(\$formValues)
     {
-        return new Application_Form_Filter_[XXX](
+        return new Filter\[XXX](
             null,
             \$this->_model,
             \$formValues
@@ -358,8 +365,8 @@ class Application_Form_[XXX] extends Crud_Forms_Abstract
         //COLUMNS = [COLUMNS]
 
         /*
-        \$parentModel = new Application_Model_DbTable_**REPLACEME**();
-        \$elem = new Zend_Form_Element_Select(
+        \$parentModel = new Models\**REPLACEME**();
+        \$elem = new \Zend_Form_Element_Select(
             '**COLUMN**',
             array('label'=>**REPLACEME**)
         );
@@ -375,7 +382,10 @@ DELIM;
     $this->_templates['orderform'] = <<<DELIM
 <?php
 
-class Application_Form_Order_[XXX] extends Crud_Forms_Order_Abstract {
+namespace Admin\Forms\Order;
+
+class [XXX] extends \Crud\Forms\Order\AbstractOrder
+{
 
     /*protected function getDropDownValues()
     {
@@ -387,7 +397,11 @@ DELIM;
 
     $this->_templates['filterform'] = <<<DELIM
 <?php
-class Application_Form_Filter_[XXX] extends Crud_Forms_Filter_Abstract {
+
+namespace Admin\Forms\Filter;
+
+class [XXX] extends \Crud\Forms\Filter\AbstractFilter
+{
    //protected \$_whitelist = array();
 
 }
@@ -397,7 +411,9 @@ DELIM;
     $this->_templates['table'] = <<<DELIM
 <?php
 
-class Application_Model_DbTable_[XXX] extends Crud_Model_DbTable_Abstract
+namespace Admin\Models;
+
+class [XXX] extends \Crud\Model\DbTable\AbstractDbTable
 {
     protected \$_name = '[TNAME]';
     protected \$_primary = [PRIMARY];
@@ -430,8 +446,6 @@ class Application_Model_DbTable_[XXX] extends Crud_Model_DbTable_Abstract
 
 }
 DELIM;
-
-
 
 
     }

@@ -1,5 +1,7 @@
 <?php
 
+namespace crud\Application\Resource;
+
 /**
  * Crudloader
  *
@@ -11,7 +13,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crudloader extends Zend_Application_Resource_ResourceAbstract
+class Crudloader extends \Zend_Application_Resource_ResourceAbstract
 {
   /**
    * init
@@ -29,7 +31,7 @@ class Crudloader extends Zend_Application_Resource_ResourceAbstract
    */
   protected function _setCrudAutoloader()
   {
-     $crudAutoloader = new Zend_Application_Module_Autoloader(
+     $crudAutoloader = new \Zend_Application_Module_Autoloader(
          array(
              'namespace' => 'Application_',
              'basePath'  => dirname(__FILE__),

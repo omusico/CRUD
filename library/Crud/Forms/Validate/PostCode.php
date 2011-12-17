@@ -1,5 +1,8 @@
 <?php
-class Crud_Forms_Validate_PostCode extends Zend_Validate_PostCode
+
+namespace Crud\Forms\Validate;
+
+class PostCode extends \Zend_Validate_PostCode
 {
 
     protected $_messageTemplates = array(

@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Helpers;
+
 /**
  * must define $_metadata and the ctor !!!
  *//**
@@ -12,7 +15,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Helpers_String
+class String
 {
 
     /**

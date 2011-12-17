@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Forms\Order;
+
 /**
  * Helpers for Oder form
  *
@@ -10,10 +13,10 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Order_Helper
+class Helper
 {
    
-   public static function getOrderQuery(Zend_Controller_Request_Http $request)
+   public static function getOrderQuery(\Zend_Controller_Request_Http $request)
    {
        //id desc
        if (!$request->getParam('order', false)) {
@@ -23,19 +26,19 @@ class Crud_Forms_Order_Helper
               . $request->getParam('direction', 'desc');
    }
 
-   public static function isFormPosted(Zend_Controller_Request_Http $request)
+   public static function isFormPosted(\Zend_Controller_Request_Http $request)
    {
         return $request->isPost() 
                && $request->getPost('form_order_submitted', 0);
    }
 
-   public static function getPostOrder(Zend_Controller_Request_Http $request)
+   public static function getPostOrder(\Zend_Controller_Request_Http $request)
    {
         return $request->getPost('order', null); //TODO to test
    }
 
    public static function getPostDirection(
-       Zend_Controller_Request_Http $request
+       \Zend_Controller_Request_Http $request
    )
    {
         return $request->getPost('direction', 'asc');
@@ -44,21 +47,21 @@ class Crud_Forms_Order_Helper
    /**
     * URl 
     *
-    * @param Zend_View $view
-    * @param Zend_Controller_Request_Http $request
+    * @param \Zend_View $view
+    * @param \Zend_Controller_Request_Http $request
     * @return <type>
     */
    public static function url(
-       Zend_View $view, Zend_Controller_Request_Http $request
+       \Zend_View $view, \Zend_Controller_Request_Http $request
    )
    {
        return $view->url(
            array(
                'action'   => 'index',
                'page'     => 1, //reset page when changing order
-               Crud_Forms_Order_Abstract::ORDER_PARAM_NAME
+               AbstractOrder::ORDER_PARAM_NAME
                    => self::getPostOrder($request),
-               Crud_Forms_Order_Abstract::ORDER_DIRECTION_NAME
+               AbstractOrder::ORDER_DIRECTION_NAME
                    => self::getPostDirection($request)
            )
        );

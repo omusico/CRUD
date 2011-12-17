@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Helpers;
+
 /**
  * must define $_metadata and the ctor !!!
  *//**
@@ -12,7 +15,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Helpers_Cache
+class Cache
 {
     /**
      * @var boolean
@@ -20,14 +23,14 @@ class Crud_Helpers_Cache
     static protected $_enabled = false;
 
     /**
-     * @var Zend_Cache_Core
+     * @var \Zend_Cache_Core
      */
     static protected $_cache;
 
     static function init($enabled, $lifetime=7200)
     {
 
-        $optionsAll = Zend_Registry::get('config');
+        $optionsAll = \Zend_Registry::get('config');
         $options = $optionsAll->app->cache;
 
         //check if cache directory exists
@@ -35,7 +38,7 @@ class Crud_Helpers_Cache
         $dirExists = is_writable($options->backEndOptions->cache_dir);
 
         if ($enabled && !$dirExists) {
-            $logger = Zend_Registry::get('log');
+            $logger = \Zend_Registry::get('log');
             $logger->INFO('cache folder missing or not writable');
         }
 
@@ -45,7 +48,7 @@ class Crud_Helpers_Cache
         if (self::$_enabled) {
             include_once 'Zend/Cache.php';
 
-            self::$_cache = $cache = Zend_Cache::factory(
+            self::$_cache = $cache = \Zend_Cache::factory(
                 $options->frontEnd,
                 $options->backEnd,
                 $options->frontEndOptions->toArray(),

@@ -1,7 +1,10 @@
 <?php
+
+namespace Crud\Model;
+
 /*
  * interface for Model used by CRUD controller
- * Crud_Model_Interface
+ * \Crud\Model\InterfaceModel
  *
  *//**
  * Class Name
@@ -14,7 +17,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-Interface Crud_Model_AutoCompleteInterface extends Crud_Model_CommonInterface{
+Interface AutoCompleteInterface extends CommonInterface{
      
      /**
       * MUST return the string made from the row. It's used to populate edit forms.usually returns $row['name']
@@ -25,7 +28,7 @@ Interface Crud_Model_AutoCompleteInterface extends Crud_Model_CommonInterface{
       }*/
 
      /** MUST return an array of the fetchAll with elements "id" and "name" used to make the list
-      * See Crud_Model_Abstract for a sample implementation
+      * See Crud\Model\Abstract for a sample implementation
       */
      public function search($q, $limit);
      

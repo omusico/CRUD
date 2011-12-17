@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Forms\Element;
+
 /**
  * Class Name
  *
@@ -10,8 +13,8 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Element_SelectBoxYesNo
-    extends Zend_Form_Element_Select
+class SelectBoxYesNo
+    extends \Zend_Form_Element_Select
 {
    
      public $options = array('yes'=>'Yes', 'no'=>'No');

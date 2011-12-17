@@ -1,7 +1,10 @@
 <?php
+
+namespace Crud\Model;
+
 /*
  * interface for Model used by CRUD controller
- * Crud_Model_Interface
+ * \Crud\Model\InterfaceModel
  *
  *//**
  * Class Name
@@ -14,7 +17,8 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-Interface Crud_Model_CommonInterface {
+Interface CommonInterface
+{
      
      /**
       * the same of the other interface

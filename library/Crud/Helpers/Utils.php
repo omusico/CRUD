@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Helpers;
+
 /**
  * various static methods
  *//**
@@ -12,12 +15,12 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Helpers_Utils
+class Utils
 {
     
     public static function getUserIdOrZero()
     {
-        $user = Zend_Auth::getInstance()->getIdentity();
+        $user = \Zend_Auth::getInstance()->getIdentity();
         return ($user && is_array($user) && isset($user['id']))
                ? $user['id'] : 0;
     }

@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Forms\Validate;
+
 /**
  * Validator for integer used as timestamp
  *
@@ -10,7 +13,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Validate_IntTimestamp extends Zend_Validate_Int
+class IntTimestamp extends \Zend_Validate_Int
 {
     CONST MIN_YEAR = 1975; //1/1/1990 = mktime(0, 0, 0, 1, 1, 1990);
     protected $_messageTemplates = array(
@@ -19,7 +22,7 @@ class Crud_Forms_Validate_IntTimestamp extends Zend_Validate_Int
     );
 
     /**
-     * Defined by Zend_Validate_Interface
+     * Defined by \Zend_Validate_Interface
      *
      * Returns true if and only if $value is a valid integer AND greater
      * than zero

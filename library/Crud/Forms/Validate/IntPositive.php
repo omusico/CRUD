@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Forms\Validate;
+
 /**
  * Validator for integer used as timestamp
  *
@@ -10,7 +13,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Validate_IntPositive extends Zend_Validate_Int
+class IntPositive extends \Zend_Validate_Int
 {
     
     protected $_messageTemplates = array(
@@ -18,7 +21,7 @@ class Crud_Forms_Validate_IntPositive extends Zend_Validate_Int
         self::NOT_INT => "'%value%' does not appear to be an integer greater than 0",
     );
     /**
-     * Defined by Zend_Validate_Interface
+     * Defined by \Zend_Validate_Interface
      *
      * Returns true if and only if $value is a valid integer AND greater than zero
      *

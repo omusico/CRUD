@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Helpers;
+
 /**
  * Helper for Images
  *//**
@@ -12,12 +15,12 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Helpers_Image
+class Image
 {
     /**
      * Convert image to jpeg, using imagemagick or gd if not available
      *
-     * @throws Zend_View_Exception
+     * @throws \Zend_View_Exception
      * @param array options: sourcePath, outputPath, outputWidth(in pixels),
      * outputHeight=null, method='gd', quality=75, maxWidth=2048
      */
@@ -34,17 +37,17 @@ class Crud_Helpers_Image
 
         //checks
         if ($outputWidth < 1 || $outputWidth > $maxWidth) {
-            throw new Zend_View_Exception (
+            throw new \Zend_View_Exception (
                 'width must be at least 1px and at maximum ' . $maxWidth
             );
         }        
         if (!file_exists($sourcePath)) {
-            throw new Zend_View_Exception(
+            throw new \Zend_View_Exception(
                 'Input file ['.$sourcePath.'] does not exists'
             );
         }
         if (!is_writable(dirname($outputPath))) {
-            throw new Zend_View_Exception(
+            throw new \Zend_View_Exception(
                 'Unable to write into ' . dirname($outputPath)
             );
         }
@@ -59,7 +62,7 @@ class Crud_Helpers_Image
            return file_exists($outputPath);
         } else {
             if (!extension_loaded('gd')) {
-                throw new Zend_View_Exception('PHP gd2 extension not loaded');
+                throw new \Zend_View_Exception('PHP gd2 extension not loaded');
             }
             //gd conversion
             $inputImageSize = getimagesize($sourcePath);
@@ -67,13 +70,13 @@ class Crud_Helpers_Image
                 $sourcePath, $inputImageSize['mime']
             );
             if (!$imgSrc) {
-                throw new Zend_View_Exception(
+                throw new \Zend_View_Exception(
                     'Unable to open the uploaded image'
                 );
             }
             
             if (!($inputImageSize[0] * $inputImageSize[1])) {
-                throw new Zend_View_Exception(
+                throw new \Zend_View_Exception(
                     'Unable to calculate the the size of the uploaded image'
                 );
             }
@@ -93,7 +96,7 @@ class Crud_Helpers_Image
                 $inputImageSize[0], $inputImageSize[1]
             )
             ) {
-                throw new Zend_View_Exception(
+                throw new \Zend_View_Exception(
                     'Unable to recompress the uploaded image'
                 );
             }
@@ -137,7 +140,7 @@ class Crud_Helpers_Image
             case 'image/png':
                 return imagecreatefrompng($sourcePath);
             default:
-                throw new Zend_View_Exception(
+                throw new \Zend_View_Exception(
                     sprintf(
                         'Type %s not supported', $mime
                     )

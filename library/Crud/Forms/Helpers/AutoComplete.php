@@ -1,4 +1,9 @@
 <?php
+
+namespace Crud\Forms\Helpers;
+
+use Crud\Config;
+
 /**
  * Helper for autocomplete fields (jquery)
  *//**
@@ -12,7 +17,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Helpers_AutoComplete
+class AutoComplete
 {
 
     protected static $_loadedJs = array();
@@ -24,7 +29,7 @@ class Crud_Forms_Helpers_AutoComplete
      */
    public static function css($src)
    {
-       $basePath = Crud_Config::getOption(Crud_Config::OPTION_CSS_BASE_PATH);
+       $basePath = Config::getOption(Config::OPTION_CSS_BASE_PATH);
        //array
        if (is_array($src)) {
            $ret = '';
@@ -54,7 +59,7 @@ class Crud_Forms_Helpers_AutoComplete
      */
    public static function js($src)
    {
-       $basePath = Crud_Config::getOption(Crud_Config::OPTION_JS_BASE_PATH);
+       $basePath = Config::getOption(Config::OPTION_JS_BASE_PATH);
 
        //array
        if (is_array($src)) {
@@ -214,14 +219,14 @@ class Crud_Forms_Helpers_AutoComplete
      * to return the records for the tpl
      * <code>
      *   <?php $this->layout()->disableLayout();  ?>
-     *   <?php echo Crud_Forms_Helpers_AutoComplete::
+     *   <?php echo Crud\Forms\Helpers\AutoComplete::
      *  autoCompleteList($this->records,
      *  'id', 'name');
      *  </code>
      *
      */
     public static function getRecordsForSearchAction(
-        Crud_Model_AutoCompleteInterface $model,
+        Crud\Model\AutoCompleteInterface $model,
         $request
     )
     {
@@ -234,14 +239,14 @@ class Crud_Forms_Helpers_AutoComplete
                 try {
                     $row    = $model->getByPK($q);
                     $return = $model->getNameAutoComplete($row);
-                } catch (Zend_Exception $e) {
+                } catch (\Zend_Exception $e) {
                     $return = 'not found' ;
                 }
             }
 
         } else {
             $return = array();
-            $q = Crud_Helpers_Utils::cleanQuerySearch($q);
+            $q = Crud\Helpers\Utils::cleanQuerySearch($q);
              if (strlen($q)>1) {
                 $return = $model->search($q, $request->getParam('limit', 20));
              }

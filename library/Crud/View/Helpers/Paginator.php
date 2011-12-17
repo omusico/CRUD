@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\View\Helpers;
+
 /**
  * View Helper for pagination
  * //TODO replace with partial tpl + partialLoop
@@ -11,16 +14,15 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_View_Helpers_Paginator
+class Paginator
 {
-
 
     /**
      * returns all the joined pages in array format
-     * @param Zend_Paginator $paginator
+     * @param \Zend_Paginator $paginator
      * @return <type>
      */
-    public static function paginatorToArray(Zend_Paginator $paginator)
+    public static function paginatorToArray(\Zend_Paginator $paginator)
     {
         $res = array();
         foreach ($paginator as $p) {
@@ -51,8 +53,8 @@ class Crud_View_Helpers_Paginator
 
     /** Print the listing table
      *
-     * @param array|Zend_Paginator $dataOrPaginator input Data (Array 2d)
-     * @param Zend_View $view
+     * @param array|\Zend_Paginator $dataOrPaginator input Data (Array 2d)
+     * @param \Zend_View $view
      * @param array $fields
      * @param array $options boolean keys:
      *         massActions|hideEditLink|hideDeleteLink
@@ -60,10 +62,10 @@ class Crud_View_Helpers_Paginator
      */
     public static function paginatorToTable(
         $dataOrPaginator,
-        Zend_View $view,
+        \Zend_View $view,
         $fields = array(),
         $options = array(),
-        Crud_Model_Interface $model = null
+        \Crud\Model\InterfaceModel $model = null
     )
     {
         //get PK
@@ -72,7 +74,7 @@ class Crud_View_Helpers_Paginator
             $pkFieldName = $model->getPKName();
         }
         
-        $pkURLName = Crud_Config::PK_NAME; //'pk';
+        $pkURLName = \Crud\Config::PK_NAME; //'pk';
         $hideEditLink = isset($options['hideEditLink'])
                       && $options['hideEditLink'];
         $hideDeleteLink = isset($options['hideDeleteLink'])
@@ -80,7 +82,7 @@ class Crud_View_Helpers_Paginator
         $noTrJsToggle = isset($options['noTrJsToggle'])
                       && $options['noTrJsToggle'];
         
-        if ($dataOrPaginator instanceof Zend_Paginator) {
+        if ($dataOrPaginator instanceof \Zend_Paginator) {
             $dataOrPaginator = self::paginatorToArray($dataOrPaginator);
         }
         $ret = '';

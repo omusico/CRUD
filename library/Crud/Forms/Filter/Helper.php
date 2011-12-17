@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Forms\Filter;
+
 /**
  * Abstract form filter
  *
@@ -10,16 +13,16 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Filter_Helper
+class Helper
 {
 
     /**
      * check if the filter form is posted
      *
-     * @param Zend_Controller_Request_Http $request
+     * @param \Zend_Controller_Request_Http $request
      * @return <type>
      */
-    public static function isFormPosted(Zend_Controller_Request_Http $request)
+    public static function isFormPosted(\Zend_Controller_Request_Http $request)
     {
         return $request->isPost()
                && $request->getPost('form_filter_submitted', 0);
@@ -27,7 +30,7 @@ class Crud_Forms_Filter_Helper
 
     /**
      * Returns options (from the post) for
-     * the 3rd parameter of Crud_Model_DbTable_Abstract::fetchPaginatorAdapter
+     * the 3rd parameter of \Crud\Model\DbTable\AbstractDbTable::fetchPaginatorAdapter
      *
      * @param array $post PostData, pass $this->getRequest()->getPost()
      *  e.g: array(
@@ -43,7 +46,7 @@ class Crud_Forms_Filter_Helper
      */
    public static function arrayToWhereArray(
        $post,
-       Crud_Model_DbTable_Abstract $model
+       \Crud\Model\DbTable\AbstractDbTable $model
    )
    {
        $ret = array();
@@ -153,12 +156,12 @@ class Crud_Forms_Filter_Helper
     /**
      * check if teh filter is enabled (from $_GET params)
      *
-     * @param Zend_Controller_Request_Abstract $request
+     * @param \Zend_Controller_Request_Abstract $request
      * @return boolean
      */
     public static function isFilterEnabled($request)
     {
-        $filterArray = Crud_Forms_Filter_Helper::stringToArray(
+        $filterArray = self::stringToArray(
             $request->getParam('filter', '')
         );
 
@@ -203,16 +206,16 @@ class Crud_Forms_Filter_Helper
    /**
     * Update the $select object using the passed filter
     *
-    * @param Zend_Paginator_Adapter_DbTableSelect $select
+    * @param \Zend_Paginator_Adapter_DbTableSelect $select
     * @param array $filters use  format array 2d, see other class methods
-    * @return Zend_Paginator_Adapter_DbTableSelect
+    * @return \Zend_Paginator_Adapter_DbTableSelect
     */
-   public static function updateSelect(Zend_Db_Table_Select $select, $filters)
+   public static function updateSelect(\Zend_Db_Table_Select $select, $filters)
    {
        // add any filters which are set
-        //$select->reset(Zend_Db_Table_Select::WHERE);
+        //$select->reset(\Zend_Db_Table_Select::WHERE);
        
-       //$schema = $select->getTable()->info(Zend_Db_Table_Abstract::NAME);
+       //$schema = $select->getTable()->info(\Zend_Db_Table_Abstract::NAME);
        //$prefix = $schema ? $schema.'.' : '';
        $prefix = ''; //TODO //should contain <tablealias>.  if there is a join
        foreach ((array)$filters as $currentFilter) {
@@ -228,7 +231,7 @@ class Crud_Forms_Filter_Helper
    /**
     * Generate URL from post data
     *
-    * @param Zend_View $view used for url helper
+    * @param \Zend_View $view used for url helper
     * @param array $post given to arrayToString
     * @return string
     */
@@ -238,7 +241,7 @@ class Crud_Forms_Filter_Helper
            array(
                'action'   => 'index',
                'page'     => 1, //reset page when changing order
-               'filter'   => Crud_Forms_Filter_Helper::arrayToString($post),
+               'filter'   => self::arrayToString($post),
             )
        );
    }

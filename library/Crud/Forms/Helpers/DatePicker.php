@@ -1,4 +1,7 @@
 <?php
+
+namespace Crud\Forms\Helpers;
+
 /**
  * Helper for autocomplete fields (jquery)
  *//**
@@ -12,7 +15,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-class Crud_Forms_Helpers_DatePicker
+class DatePicker
 {
  
     public static function getJs($field)

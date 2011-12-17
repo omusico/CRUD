@@ -1,6 +1,9 @@
 <?php
+
+namespace Crud\Controller;
+
 /**
- * Class Name
+ * for ajax searches in the model
  *
  * @category  Crud class
  * @package   Crud
@@ -10,7 +13,7 @@
  * @version   Release: 1.0
  * @link      http://www.phpntips.com/crud
  */
-Interface  Crud_Controller_SearchInterface
+Interface  InterfaceSearch
 {
     public function searchAction();
 }
